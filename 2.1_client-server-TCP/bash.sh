@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # GET STARTED ==> 
-# Run permission permission bellow:
-# > chmod +x compile.sh
+# Run permission bellow:
+# > chmod +x bash.sh
 # Then, run the code:
-# > ./compile.sh < function<parameters> >
+# > ./bash.sh < function<parameters> >
 # Examples:
-# "./compile.sh run cliente"
-# "./complile.sh del servidor"
+# "./bash.sh run cliente"
+# "./bash.sh del servidor"
 
 compile() {
     if [ "$1" == "run" ]
@@ -21,16 +21,17 @@ compile() {
 
 run() {
     local file=$1
-    gcc -Wall $1.c -o $file
+    echo "Running $file.c ..."
+    gcc -Wall $file.c -o $file
     ./$file
     del $file
 }
 
 # you can pass 1+ files to this function
 del() {
-    echo "deleting:"
-    for arg in "$@"; do
-        echo "<$arg>";
+    echo "Deleting <$@> ..."
+    for arg in "$@"; 
+    do
         rm -f $arg; 
     done 
 }
