@@ -29,6 +29,10 @@ int main (int argc, char **argv) {
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port        = htons(13);   
 
+    char buffer[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &servaddr.sin_addr.s_addr, buffer, sizeof( buffer ));
+    printf("address IP: %s\n", inet_ntop(servaddr.sin_addr.s_addr) );
+
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
         perror("bind");
         exit(1);
