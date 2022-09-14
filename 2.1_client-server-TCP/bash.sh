@@ -12,7 +12,7 @@
 compile() {
     if [ "$1" == "run" ]
     then 
-        run "$2" "$3"
+        run "${@:2}"
     elif [ "$1" == "del" ] 
     then
         del "${@:2}"
@@ -21,10 +21,9 @@ compile() {
 
 run() {
     local file=$1
-    local ip=$2
     echo "Running $file.c ..."
     gcc -Wall $file.c -o $file
-    ./$file $ip
+    ./$file "${@:2}"
     del $file
 }
 

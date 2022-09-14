@@ -19,10 +19,9 @@ int main(int argc, char **argv) {
     struct sockaddr_in servaddr;
 
     if (argc != 2) {
-        printf("%d\n", argc);
         strcpy(error,"uso: ");
         strcat(error,argv[0]);
-        strcat(error," <IPaddress>");
+        strcat(error," <Port>");
         perror(error);
         exit(1);
     }
@@ -34,15 +33,12 @@ int main(int argc, char **argv) {
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port   = htons(13);
-    if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
-        perror("inet_pton error");
-        exit(1);
-    }
-    if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
-        perror("inet_pton error");
-        exit(1);
-    }
+    servaddr.sin_port   = htons((unsigned short int) atoi(argv[1]) );
+    servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    // if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
+        // perror("inet_pton error");
+        // exit(1);
+    // }
 
     if (connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
         perror("connect error");
