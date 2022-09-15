@@ -18,6 +18,8 @@ int main(int argc, char **argv) {
     char   error[MAXLINE + 1];
     struct sockaddr_in servaddr;
 
+    char buffer[INET_ADDRSTRLEN];
+
     if (argc != 2) {
         strcpy(error,"uso: ");
         strcat(error,argv[0]);
@@ -35,10 +37,6 @@ int main(int argc, char **argv) {
     servaddr.sin_family = AF_INET;
     servaddr.sin_port   = htons( (unsigned short int) atoi(argv[1]) );
     servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
-        perror("inet_pton error");
-        exit(1);
-    }
 
     if (connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
         perror("connect error");
@@ -56,6 +54,19 @@ int main(int argc, char **argv) {
     if (n < 0) {
         perror("read error");
         exit(1);
+    }
+
+    /*
+    * to print chosen IP address and port number. 
+    */
+    socklen_t len = sizeof(servaddr);
+    if (getsockname(sockfd, (struct sockaddr *)&servaddr, &len) == -1) {
+        perror("getsockname");
+        exit(1);
+    }
+    else {
+        printf( "Client IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
+        printf( "Client Port number is: %d\n", ntohs(servaddr.sin_port) );
     }
 
     exit(0);

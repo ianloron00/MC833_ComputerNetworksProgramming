@@ -54,8 +54,8 @@ int main (int argc, char **argv) {
         exit(1);
     }
     else {
-        printf( "IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
-        printf( "Port number is: %d\n", ntohs(servaddr.sin_port) );
+        printf( "Server IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
+        printf( "Server Port number is: %d\n", ntohs(servaddr.sin_port) );
     }
 
     for ( ; ; ) {
