@@ -59,15 +59,24 @@ int main (int argc, char **argv) {
     }
 
     for ( ; ; ) {
-      if ((connfd = accept(listenfd, (struct sockaddr *) NULL, NULL)) == -1 ) {
-        perror("accept");
-        exit(1);
+        
+        if ((connfd = accept(listenfd, (struct sockaddr *) NULL, NULL ) ) == -1 ) {
+            perror("accept");
+            exit(1);
+        }
+
+        if (getpeername(connfd, (struct sockaddr *)&servaddr, &len) == -1) {
+            perror("getpeername");
+            exit(1);
+        }
+        else {
+            printf( "Server peer IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
+            printf( "Server peer Port number is: %d\n", ntohs(servaddr.sin_port) );
         }
 
         ticks = time(NULL);
         snprintf(buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks));
         write(connfd, buf, strlen(buf));
-
 
         close(connfd);
     }
