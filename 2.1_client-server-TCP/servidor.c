@@ -33,7 +33,7 @@ int main (int argc, char **argv) {
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family      = AF_INET;
     // to get local ip: https://www.binarytides.com/get-local-ip-c-linux/
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     servaddr.sin_port        = 0;   
     
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
@@ -48,19 +48,15 @@ int main (int argc, char **argv) {
     /*
     * to print chosen IP address and port number. 
     */
-    // inet_ntop(AF_INET, &servaddr.sin_addr.s_addr, buffer, sizeof( buffer ));
-    // printf("IP address: %s\n", inet_ntop(servaddr.sin_addr.s_addr) );
-    
-    // socklen_t len = sizeof(servaddr);
-    // if (getsockname(listenfd, (struct sockaddr *)&servaddr, &len) == -1) {
-    //     perror("getsockname");
-    //     exit(1);
-    // }
-    // else { 
-    //     printf("Port number: %d\n", ntohs(servaddr.sin_port));
-    // }
-    printf("IP address is: %s\n", (char *) inet_ntoa(servaddr.sin_addr));
-    printf("port is: %d\n", (int) ntohs(servaddr.sin_port));
+    socklen_t len = sizeof(servaddr);
+    if (getsockname(listenfd, (struct sockaddr *)&servaddr, &len) == -1) {
+        perror("getsockname");
+        exit(1);
+    }
+    else {
+        printf( "IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
+        printf( "Port number is: %d\n", ntohs(servaddr.sin_port) );
+    }
 
     for ( ; ; ) {
       if ((connfd = accept(listenfd, (struct sockaddr *) NULL, NULL)) == -1 ) {
