@@ -6,20 +6,20 @@
 # Then, run the code:
 # > ./bash.sh < function<parameters> >
 # Examples:
-# "./bash.sh create cliente"
+# "./bash.sh run cliente"
 # "./bash.sh del servidor"
 
 compile() {
-    if [ "$1" == "create" ]
+    if [ "$1" == "run" ]
     then 
-        create "${@:2}"
+        run "${@:2}"
     elif [ "$1" == "del" ] 
     then
         del "${@:2}"
     fi
 }
 
-create() {
+run() {
     for arg in "$@";
     do
         local file=$arg

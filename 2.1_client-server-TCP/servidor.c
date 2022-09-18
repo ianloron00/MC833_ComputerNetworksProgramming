@@ -17,6 +17,27 @@
 
 #define MAXLINE 4096
 
+/* 
+* read message from client and write to standard output 
+*/
+void str_serv( int sockfd ) {
+    ssize_t n;
+    char recvline[MAXLINE];
+
+    while ( ( n = recv(sockfd, recvline, MAXLINE, 0) ) > 0 ) {
+        printf("server received message of size == %ld: '%s'\n", n, recvline);
+    }
+    
+    if(n == 0) {
+		puts("Client disconnected");
+		fflush(stdout);
+	}
+    else if (n < 0) {
+        perror("read error");
+        exit(1);
+    }
+}
+
 int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
@@ -76,9 +97,12 @@ int main (int argc, char **argv) {
 
         ticks = time(NULL);
         snprintf(buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks));
-        write(connfd, buf, strlen(buf));
+
+        str_serv(connfd);
 
         close(connfd);
     }
+
+
     return(0);
 }
