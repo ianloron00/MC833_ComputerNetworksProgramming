@@ -13,42 +13,29 @@
 #define MAXLINE 4096
 
 /*
-* to print chosen IP address and port number. 
+* Print socket's IP address and port number. 
 */
-void get_port(int sockfd, struct sockaddr_in servaddr) {
+void get_port( int sockfd ) {
 
+    struct sockaddr_in cliaddr;
     char buffer[INET_ADDRSTRLEN];
-    // int    n;
-    // char   recvline[MAXLINE + 1];
 
-    // while ( (n = read(sockfd, recvline, MAXLINE)) > 0) {
-    //     recvline[n] = 0;
-    //     if (fputs(recvline, stdout) == EOF) {
-    //         perror("fputs error");
-    //         exit(1);
-    //     }
-    // }
-
-    // if (n < 0) {
-    //     perror("read error");
-    //     exit(1);
-    // }
-
-    socklen_t len = sizeof(servaddr);
-    if (getsockname(sockfd, (struct sockaddr *)&servaddr, &len) == -1) {
+    socklen_t len = sizeof(cliaddr);
+    if (getsockname(sockfd, (struct sockaddr *)&cliaddr, &len) == -1) {
         perror("getsockname");
         exit(1);
     }
     else {
-        printf( "Client IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
-        printf( "Client Port number is: %d\n", ntohs(servaddr.sin_port) );
+        printf( "Client IP address is: %s\n", 
+            (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ) );
+        printf( "Client Port number is: %d\n", ntohs(cliaddr.sin_port) );
     }
 }
 
 /* 
-* read message from standard input and write to server 
+* Read message from standard input and write to server 
 */
-void str_cli( int sockfd ) {
+void write_recv_msg( int sockfd ) {
 
     char sendline[MAXLINE];
 
@@ -91,10 +78,10 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    get_port( sockfd, servaddr );
+    get_port( sockfd );
     
-    // for( ; ; )
-    str_cli( sockfd );
+    for( ; ; )
+        write_recv_msg( sockfd );
 
     exit(0);
 }
