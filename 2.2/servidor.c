@@ -53,6 +53,7 @@ void read_msg( int sockfd ) {
 		puts("Client disconnected");
 		fflush(stdout);
 	}
+    
     else if (n < 0) {
         perror("read error");
         exit(1);
@@ -106,10 +107,11 @@ int main (int argc, char **argv) {
             exit(1);
         }
 
-        get_peer_port( connfd );
-
         ticks = time(NULL);
         snprintf(buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks));
+        write(connfd, buf, strlen(buf));
+
+        get_peer_port( connfd );
 
         read_msg(connfd);
 

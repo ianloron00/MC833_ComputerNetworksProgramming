@@ -11,6 +11,8 @@
 #include <unistd.h>
 
 #define MAXLINE 4096
+ssize_t n;
+char recvline[MAXLINE];
 
 /*
 * Print socket's IP address and port number. 
@@ -29,6 +31,42 @@ void get_port( int sockfd ) {
         printf( "Client IP address is: %s\n", 
             (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ) );
         printf( "Client Port number is: %d\n", ntohs(cliaddr.sin_port) );
+    }
+}
+
+/*
+* Reads message from server, only once.
+*/
+char read_msg_once( int sockfd ) {
+
+    ssize_t n;
+    char recvline[MAXLINE];
+
+    if ( (n = read(sockfd, recvline, MAXLINE)) > 0) {
+        if (fputs(recvline, stdout) == EOF) {
+            perror("fputs error");
+            exit(1);
+        }
+        recvline[n] = 0;
+    }
+
+    if (n < 0) {
+        perror("read error");
+        exit(1);
+    }
+
+    return (n > 0);
+}
+
+/*
+* Reads message from server.
+*/
+void read_msg( int sockfd ) {
+    
+    ssize_t n = read_msg_once( sockfd );
+    
+    while ( n > 0 ) {
+        n = read_msg_once( sockfd );
     }
 }
 
@@ -78,10 +116,13 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
+    read_msg_once( sockfd );
+
     get_port( sockfd );
     
     for( ; ; )
         write_recv_msg( sockfd );
+
 
     exit(0);
 }
