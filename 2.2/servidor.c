@@ -1,21 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <time.h>
-#include <unistd.h>
-// https://www.gta.ufrj.br/ensino/eel878/sockets/inet_ntoaman.html
-// to print properly IP and port numbers
-#include <arpa/inet.h>
+#include "./wrappers.h"
 
 #define LISTENQ 10
 #define MAXDATASIZE 100
 
-#define MAXLINE 4096
 
 /*
 * Print connected peer socket's IP address and port number. 
@@ -114,6 +101,8 @@ int main (int argc, char **argv) {
         get_peer_port( connfd );
 
         read_msg(connfd);
+
+        sleep( 1000000 );
 
         close(connfd);
     }

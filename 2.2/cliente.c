@@ -1,18 +1,4 @@
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <netdb.h>
-#include <string.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#define MAXLINE 4096
-ssize_t n;
-char recvline[MAXLINE];
+#include "./wrappers.h"
 
 /*
 * Print socket's IP address and port number. 
@@ -120,8 +106,8 @@ int main(int argc, char **argv) {
 
     get_port( sockfd );
     
-    for( ; ; )
-        write_recv_msg( sockfd );
+    // for( ; ; )
+    write_recv_msg( sockfd );
 
 
     exit(0);
