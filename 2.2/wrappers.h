@@ -34,7 +34,7 @@ static ssize_t my_read( int fd, char *ptr ) {
 }
 
 ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
-    ssize_t n, rc;
+    ssize_t n = 1, rc;
     char c, *ptr;
 
     ptr = ( char * ) vptr;
@@ -51,7 +51,7 @@ ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
     }
 
     *ptr = 0;
-    return (0);
+    return (n - 1);
 }
 
 ssize_t readbuf( void **vptrptr ) {
@@ -72,11 +72,11 @@ int Socket ( int family, int type, int flags ) {
 void Listen ( int fd, int backlog ) {
     char *ptr;
 
-    if ( ( ptr = getenv("LISTENQ" ) ) != NULL )
+    if ( ( ptr = getenv( "LISTENQ" ) ) != NULL )
         backlog = atoi( ptr );
 
     if ( listen( fd, backlog ) < 0 ) {
-        perror( "listen error" );
+        perror( "Listen error" );
         exit(1);
     }
 }
@@ -100,4 +100,27 @@ ssize_t Writen( int fd, const void *vptr, size_t n ) {
         ptr += nwritten;
     }
     return (n);
+}
+
+void Accept ( int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen ) {
+    int connfd;
+    if ( ( connfd = accept( sockfd, (struct sockaddr *) cliaddr, addrlen ) ) == -1 ) {
+        perror("Accept");
+        exit(1);
+    }
+}
+
+void Bind ( int sockfd, struct sockaddr * myaddr, int addrlen ) {
+    if ( bind( sockfd, (struct sockaddr *)&myaddr, addrlen ) == -1 ) {
+        perror("Bind");
+        exit(1);
+    }
+}
+
+pid_t Fork(void) {
+    return fork();
+}
+
+void Close( int fd ) {
+    close( fd );
 }
