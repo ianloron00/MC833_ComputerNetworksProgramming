@@ -102,12 +102,14 @@ ssize_t Writen( int fd, const void *vptr, size_t n ) {
     return (n);
 }
 
-void Accept ( int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen ) {
+int Accept ( int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen ) {
     int connfd;
     if ( ( connfd = accept( sockfd, (struct sockaddr *) cliaddr, addrlen ) ) == -1 ) {
         perror("Accept");
         exit(1);
     }
+
+    return connfd;
 }
 
 void Bind ( int sockfd, struct sockaddr * myaddr, int addrlen ) {

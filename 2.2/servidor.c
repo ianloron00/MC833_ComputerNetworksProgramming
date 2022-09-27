@@ -31,34 +31,44 @@ void read_msg( int sockfd ) {
     ssize_t n;
     char recvline[MAXLINE];
 
-    while ( ( n = recv(sockfd, recvline, MAXLINE, 0) ) > 0 ) {
+    n = Readline ( sockfd, recvline, MAXLINE );
+    if (n) {
         printf("server received message of size = %ld: %s\n", n, recvline);
         memset(recvline, 0, n);
     }
-    
-    if(n == 0) {
+
+    else if(n == 0) {
 		puts("Client disconnected");
 		fflush(stdout);
 	}
-    
-    else if (n < 0) {
-        perror("read error");
-        exit(1);
-    }
+}
+
+/*
+* Generic Function to be executed after fork
+*/
+void doit( int connfd ) {
+    char   buf[MAXDATASIZE];
+    time_t ticks;
+
+
+    ticks = time(NULL);
+    snprintf(buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks));
+    Writen(connfd, buf, strlen(buf));
+
+    get_peer_port( connfd );
+
+    read_msg(connfd);
+
+    sleep( 1 );
 }
 
 int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
-    char   buf[MAXDATASIZE];
-    time_t ticks;
+    pid_t pid;
 
     char buffer[INET_ADDRSTRLEN];
 
-    // if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-    //     perror("socket");
-    //     exit(1);
-    // }
     listenfd = Socket( AF_INET, SOCK_STREAM, 0 );
 
     bzero(&servaddr, sizeof(servaddr));
@@ -66,16 +76,11 @@ int main (int argc, char **argv) {
     servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     servaddr.sin_port        = 0;   
     
-    // if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
-    //     perror("bind");
-    //     exit(1);
-    // }
+    if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
+        perror("bind");
+        exit(1);
+    }
     // Bind( listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr) );
-
-    // if (listen(listenfd, LISTENQ) == -1) {
-    //     perror("listen");
-    //     exit(1);
-    // }
 
     Listen( listenfd, LISTENQ );  
 
@@ -94,27 +99,15 @@ int main (int argc, char **argv) {
 
     for ( ; ; ) {
         
-        if ((connfd = accept( listenfd, (struct sockaddr *) NULL, NULL ) ) == -1 ) {
-            perror("accept");
-            exit(1);
+        connfd = Accept( listenfd, (struct sockaddr *) NULL, NULL );
+
+        if ( (pid = Fork() ) == 0 ) {
+            Close( listenfd );
+            doit( connfd );
+            Close( connfd );
+            exit( 0 );
         }
 
-        ticks = time(NULL);
-        snprintf(buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks));
-        Writen(connfd, buf, strlen(buf));
-
-        get_peer_port( connfd );
-
-        // read_msg(connfd);
-        ssize_t n;
-        char recvline[MAXLINE];
-        n = Readline ( connfd, recvline, MAXLINE );
-        printf("server received message of size = %ld: %s\n", n, recvline);
-        memset(recvline, 0, n);
-
-        sleep( 1 );
-
-        // close(connfd);
         Close(connfd);
     }
 

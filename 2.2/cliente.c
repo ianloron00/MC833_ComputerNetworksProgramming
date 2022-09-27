@@ -106,8 +106,8 @@ int main(int argc, char **argv) {
 
     get_port( sockfd );
     
-    // for( ; ; )
-    write_recv_msg( sockfd );
+    for( ; ; )
+        write_recv_msg( sockfd );
 
 
     exit(0);
