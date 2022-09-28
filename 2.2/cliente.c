@@ -14,9 +14,9 @@ void get_port( int sockfd ) {
         exit(1);
     }
     else {
-        printf( "Client IP address is: %s\n", 
-            (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ) );
-        printf( "Client Port number is: %d\n", ntohs(cliaddr.sin_port) );
+        printf( "Client => IP address: %s; Port number: %d\n", 
+            (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ), 
+            ntohs(cliaddr.sin_port) );
     }
 }
 
@@ -74,37 +74,48 @@ void write_recv_msg( int sockfd ) {
     }
 }
 
+void print_server_info( char** argv ) {
+
+    printf( "(Server) => IP address: %s; Port number: %s\n", 
+    (char *) argv[1], 
+    (char *) argv[2] );
+}
+
 int main(int argc, char **argv) {
     int    sockfd;
     char   error[MAXLINE + 1];
     struct sockaddr_in servaddr;
 
-    if (argc != 2) {
+    if (argc != 3) {
         strcpy(error,"uso: ");
         strcat(error,argv[0]);
-        strcat(error," <Port>");
+        strcat(error," <IPaddress> | <Port> ");
         perror(error);
         exit(1);
     }
 
-    if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("socket error");
-        exit(1);
-    }
+    sockfd = Socket( AF_INET, SOCK_STREAM, 0);
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port   = htons( (unsigned short int) atoi(argv[1]) );
-    servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    // servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
+        perror("inet_pton error");
+        exit(1);
+    }
+    servaddr.sin_port   = htons( (unsigned short int) atoi(argv[2]) );
 
     if (connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
         perror("connect error");
         exit(1);
     }
+    // Connect( sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr) );
 
     read_msg_once( sockfd );
 
     get_port( sockfd );
+
+    print_server_info( argv );
     
     for( ; ; )
         write_recv_msg( sockfd );
@@ -112,3 +123,5 @@ int main(int argc, char **argv) {
 
     exit(0);
 }
+
+//popen( <comando> );

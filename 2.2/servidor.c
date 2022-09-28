@@ -18,9 +18,9 @@ void get_peer_port( int sockfd ) {
         exit(1);
     }
     else {
-        printf( "Server peer IP address is: %s\n", 
-            (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ) );
-        printf( "Server peer Port number is: %d\n", ntohs(peeraddr.sin_port) );
+        printf( "(A client) => IP address: %s; Port number: %d\n", 
+            (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ),
+            ntohs(peeraddr.sin_port) );
     }
 }
 
@@ -93,8 +93,9 @@ int main (int argc, char **argv) {
         exit(1);
     }
     else {
-        printf( "Server IP address is: %s\n", (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ) );
-        printf( "Server Port number is: %d\n", ntohs(servaddr.sin_port) );
+        printf( "Server => IP address: %s, Port number: %d\n", 
+        (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ),
+        ntohs(servaddr.sin_port) );
     }
 
     for ( ; ; ) {

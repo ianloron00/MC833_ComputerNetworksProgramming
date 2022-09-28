@@ -112,6 +112,13 @@ int Accept ( int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen ) {
     return connfd;
 }
 
+void Connect( int sockfd, struct sockaddr * servaddr, ssize_t length ) {
+    if ( connect( sockfd, (struct sockaddr *) &servaddr, length ) < 0 ) {
+        perror("connect error");
+        exit(1);
+    }
+}
+
 void Bind ( int sockfd, struct sockaddr * myaddr, int addrlen ) {
     if ( bind( sockfd, (struct sockaddr *)&myaddr, addrlen ) == -1 ) {
         perror("Bind");
