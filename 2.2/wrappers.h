@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 
 #define MAXLINE 4096
+#define MAXOUTPUT 16384
 
 static int read_cnt;
 static char *read_ptr;

@@ -43,30 +43,78 @@ void read_msg( int sockfd ) {
 	}
 }
 
+/* 
+* Prints time of connection with client and sends its time 
+*/
+void display_time_connection( int connfd ) {
+    char   buf[MAXDATASIZE];
+    time_t ticks;
+
+    /* prints the time a connection is established 
+    and send to client */
+    ticks = time(NULL);
+    printf( "Connection established at: %.24s\r\n", ctime(&ticks) );
+    snprintf( buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks) );
+    Writen(connfd, buf, strlen(buf));
+}
+
+/*
+* Send commands to client execute it and return output.
+*/ 
+void send_commands( int connfd ) {
+    char comms[] = "pwd;ifconfig;pwd;ls -l;END\n";
+    Writen( connfd, comms, strlen(comms) );
+    printf( "Message sent: %s\n\n", comms );
+}
+
+/*
+ * Save results, given by clients, in a file. 
+*/
+void save_result_commands( int connfd ) {
+    char rec[MAXOUTPUT];
+    FILE *file;
+    
+    Readline( connfd, rec, sizeof(rec) );
+    printf( "Received message =>\n %s\n", rec );
+    file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a+");
+    fprintf(file, "This is testing for fprintf...\n");
+    fputs( rec, file );
+}
+
 /*
 * Generic Function to be executed after fork
 */
 void doit( int connfd ) {
-    char   buf[MAXDATASIZE];
-    time_t ticks;
-
-
-    ticks = time(NULL);
-    snprintf(buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks));
-    Writen(connfd, buf, strlen(buf));
-
+    
+    display_time_connection( connfd );
     get_peer_port( connfd );
 
-    read_msg(connfd);
-
     sleep( 1 );
+    send_commands( connfd );
+    save_result_commands( connfd );
+    
+    // read_msg(connfd);
 }
+
+// void get_server_info( int listenfd, const struct sockaddr *servaddr ) {
+//     char buffer[INET_ADDRSTRLEN];
+
+//     socklen_t len = sizeof(servaddr);
+//     if (getsockname(listenfd, (struct sockaddr *)&servaddr, &len) == -1) {
+//         perror("getsockname");
+//         exit(1);
+//     }
+//     else {
+//         printf( "Server => IP address: %s, Port number: %d\n", 
+//         (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ),
+//         ntohs(servaddr.sin_port) );
+//     }
+// }
 
 int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
     pid_t pid;
-
     char buffer[INET_ADDRSTRLEN];
 
     listenfd = Socket( AF_INET, SOCK_STREAM, 0 );

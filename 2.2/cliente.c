@@ -3,7 +3,7 @@
 /*
 * Print socket's IP address and port number. 
 */
-void get_port( int sockfd ) {
+void get_client_info( int sockfd ) {
 
     struct sockaddr_in cliaddr;
     char buffer[INET_ADDRSTRLEN];
@@ -74,11 +74,58 @@ void write_recv_msg( int sockfd ) {
     }
 }
 
+/*
+* Print IP and port number of connected server.
+*/
 void print_server_info( char** argv ) {
 
     printf( "(Server) => IP address: %s; Port number: %s\n", 
     (char *) argv[1], 
     (char *) argv[2] );
+}
+
+void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
+    char input[MAXLINE], *ptr, *comm, outcomm[MAXOUTPUT], output[MAXOUTPUT];
+    FILE *file;
+    char b[2] = ";";
+    Readline( sockfd, input, sizeof( input ) );
+
+    printf( "Input: %s\n", input );
+
+    /* break entry data into commands */
+    comm = strtok_r( input, b, &ptr);
+    printf( "Commands outputs:\n" );
+
+    while ( comm != NULL && strcmp(comm, "END") ) {
+        
+        printf("Entered while\n");
+        file = popen( comm, "r" );
+        if(!file){
+            fprintf(stderr, "Could not open pipe for input <%s>.\n", comm );
+            return;
+        }
+        
+        /* saves its output */
+        // ocsize = fscanf( file, "%s", outcomm );
+        while ( fgets( outcomm, MAXLINE, file ) ) {
+            strcat( output, outcomm );
+            // printf("output =>\n %s\n", outcomm );
+            memset( outcomm, 0, MAXLINE );
+        }
+        // printf( "%s =>\n %s\n--------------\n", comm, outcomm );
+        // strcat( output, outcomm );
+        // memset( outcomm, 0, MAXLINE );
+        printf("output =>\n %s\n", output );
+
+        pclose( file );
+        printf("closed\n");
+        comm = strtok_r( NULL, b, &ptr );
+        printf("next command: %s\n", comm );
+    }
+
+    printf( "Outside the while\n" );
+    /* send data to server */
+    Writen( sockfd, output, sizeof(output) );
 }
 
 int main(int argc, char **argv) {
@@ -113,12 +160,13 @@ int main(int argc, char **argv) {
 
     read_msg_once( sockfd );
 
-    get_port( sockfd );
+    get_client_info( sockfd );
 
     print_server_info( argv );
     
-    for( ; ; )
-        write_recv_msg( sockfd );
+    for( ; ; ) {
+        exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
+    }
 
 
     exit(0);
