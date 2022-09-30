@@ -74,6 +74,8 @@ void write_recv_msg( int sockfd ) {
     }
 }
 
+
+
 /*
 * Print IP and port number of connected server.
 */
@@ -106,26 +108,25 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
         }
         
         /* saves its output */
-        // ocsize = fscanf( file, "%s", outcomm );
         while ( fgets( outcomm, MAXLINE, file ) ) {
             strcat( output, outcomm );
-            // printf("output =>\n %s\n", outcomm );
             memset( outcomm, 0, MAXLINE );
         }
-        // printf( "%s =>\n %s\n--------------\n", comm, outcomm );
-        // strcat( output, outcomm );
-        // memset( outcomm, 0, MAXLINE );
-        printf("output =>\n %s\n", output );
 
         pclose( file );
         printf("closed\n");
         comm = strtok_r( NULL, b, &ptr );
         printf("next command: %s\n", comm );
     }
-
-    printf( "Outside the while\n" );
+    if ( comm != NULL )
+        printf("comp: %s %d  ", comm, strcmp( comm , "END" ) );
+    
+    strcat( output, "\n" );
+    printf( "Outside the while.\nFinal message =>\n %s\n", output );
     /* send data to server */
+    // Write( sockfd, output, sizeof(output) );
     Writen( sockfd, output, sizeof(output) );
+    // sleep(1);
 }
 
 int main(int argc, char **argv) {
@@ -164,9 +165,9 @@ int main(int argc, char **argv) {
 
     print_server_info( argv );
     
-    for( ; ; ) {
-        exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
-    }
+    // for( ; ; ) {
+    exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
+    // }
 
 
     exit(0);

@@ -1,3 +1,6 @@
+#ifndef LIBS
+#define LIBS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -12,6 +15,8 @@
 
 #define MAXLINE 4096
 #define MAXOUTPUT 16384
+
+#endif
 
 static int read_cnt;
 static char *read_ptr;
@@ -53,6 +58,19 @@ ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
 
     *ptr = 0;
     return (n - 1);
+}
+
+ssize_t Readtext ( int fd, void *vptr, size_t maxlen ) {
+    ssize_t n = 0, m;
+    char line[MAXLINE];
+    while ( ( m = Readline( fd, line, sizeof(line) ) ) > 1 ) {
+        n += m;
+        strcat( vptr, line );
+        printf( "Line read => %s", line );
+    }
+
+    printf("Final text =>\n %s\n", (const char*) vptr );
+    return n;
 }
 
 ssize_t readbuf( void **vptrptr ) {
@@ -100,7 +118,17 @@ ssize_t Writen( int fd, const void *vptr, size_t n ) {
         nleft -= nwritten;
         ptr += nwritten;
     }
+
+    printf("message sent.\n");
     return (n);
+}
+
+size_t Write( int fd, const void* line, ssize_t len ) {
+    size_t n;
+    if ( ( n = Writen( fd, line, len ) ) > 0 ) {
+        printf( "Sending =>\n %s\n", (const char*) line );
+    }
+    return n;
 }
 
 int Accept ( int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen ) {

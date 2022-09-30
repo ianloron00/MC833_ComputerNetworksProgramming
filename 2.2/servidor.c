@@ -62,7 +62,8 @@ void display_time_connection( int connfd ) {
 * Send commands to client execute it and return output.
 */ 
 void send_commands( int connfd ) {
-    char comms[] = "pwd;ifconfig;pwd;ls -l;END\n";
+    char comms[] = "ls -l;END\n";
+    // char comms[] = "pwd;ifconfig;pwd;ls -l;END\n";
     Writen( connfd, comms, strlen(comms) );
     printf( "Message sent: %s\n\n", comms );
 }
@@ -74,11 +75,10 @@ void save_result_commands( int connfd ) {
     char rec[MAXOUTPUT];
     FILE *file;
     
-    Readline( connfd, rec, sizeof(rec) );
+    Readtext( connfd, rec, sizeof(rec) );
     printf( "Received message =>\n %s\n", rec );
     file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a+");
-    fprintf(file, "This is testing for fprintf...\n");
-    fputs( rec, file );
+    fprintf(file, "%s\n", rec );
 }
 
 /*
@@ -95,21 +95,6 @@ void doit( int connfd ) {
     
     // read_msg(connfd);
 }
-
-// void get_server_info( int listenfd, const struct sockaddr *servaddr ) {
-//     char buffer[INET_ADDRSTRLEN];
-
-//     socklen_t len = sizeof(servaddr);
-//     if (getsockname(listenfd, (struct sockaddr *)&servaddr, &len) == -1) {
-//         perror("getsockname");
-//         exit(1);
-//     }
-//     else {
-//         printf( "Server => IP address: %s, Port number: %d\n", 
-//         (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ),
-//         ntohs(servaddr.sin_port) );
-//     }
-// }
 
 int main (int argc, char **argv) {
     int    listenfd, connfd;
