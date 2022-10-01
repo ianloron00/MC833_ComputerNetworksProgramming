@@ -1,40 +1,43 @@
-total 196
--rw-rw-r-- 1 ianloron00 ianloron00   636 set 30 17:51 auxiliary.h
--rwxrwxr-x 1 ianloron00 ianloron00 23032 set 30 18:18 cliente
--rw-rw-r-- 1 ianloron00 ianloron00  4139 set 30 18:19 cliente.c
--rw-rw-r-- 1 ianloron00 ianloron00 95313 set 22 21:19 Exercicio2_2-ServidorTCPConcorrente.pdf
-drwxrwxr-x 2 ianloron00 ianloron00  4096 set 30 18:20 out
--rwxrwxr-x 1 ianloron00 ianloron00   601 set 22 21:17 run.sh
--rwxrwxr-x 1 ianloron00 ianloron00 22912 set 30 18:18 servidor
--rw-rw-r-- 1 ianloron00 ianloron00  3709 set 30 17:45 servidor.c
--rwxrwxr-x 1 ianloron00 ianloron00 16880 set 30 16:36 temp
--rw-rw-r-- 1 ianloron00 ianloron00   715 set 30 16:36 temp.c
--rw-rw-r-- 1 ianloron00 ianloron00  3574 set 30 18:17 wrappers.h
-Time: Fri Sep 30 18:20:36 2022
+/home/ianloron00/grad/833/MC833/2.2
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:cb:56:3f:a0  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-total 196
--rw-rw-r-- 1 ianloron00 ianloron00   636 set 30 17:51 auxiliary.h
--rwxrwxr-x 1 ianloron00 ianloron00 23032 set 30 18:25 cliente
--rw-rw-r-- 1 ianloron00 ianloron00  4169 set 30 18:25 cliente.c
--rw-rw-r-- 1 ianloron00 ianloron00 95313 set 22 21:19 Exercicio2_2-ServidorTCPConcorrente.pdf
-drwxrwxr-x 2 ianloron00 ianloron00  4096 set 30 18:21 out
--rwxrwxr-x 1 ianloron00 ianloron00   601 set 22 21:17 run.sh
--rwxrwxr-x 1 ianloron00 ianloron00 22912 set 30 18:25 servidor
--rw-rw-r-- 1 ianloron00 ianloron00  3709 set 30 17:45 servidor.c
--rwxrwxr-x 1 ianloron00 ianloron00 16880 set 30 16:36 temp
--rw-rw-r-- 1 ianloron00 ianloron00   715 set 30 16:36 temp.c
--rw-rw-r-- 1 ianloron00 ianloron00  3574 set 30 18:17 wrappers.h
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:cb:56:3f:a0  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-total 196
--rw-rw-r-- 1 ianloron00 ianloron00   636 set 30 17:51 auxiliary.h
--rwxrwxr-x 1 ianloron00 ianloron00 23032 set 30 18:25 cliente
--rw-rw-r-- 1 ianloron00 ianloron00  4169 set 30 18:25 cliente.c
--rw-rw-r-- 1 ianloron00 ianloron00 95313 set 22 21:19 Exercicio2_2-ServidorTCPConcorrente.pdf
-drwxrwxr-x 2 ianloron00 ianloron00  4096 set 30 18:21 out
--rwxrwxr-x 1 ianloron00 ianloron00   601 set 22 21:17 run.sh
--rwxrwxr-x 1 ianloron00 ianloron00 22912 set 30 18:25 servidor
--rw-rw-r-- 1 ianloron00 ianloron00  3709 set 30 17:45 servidor.c
--rwxrwxr-x 1 ianloron00 ianloron00 16880 set 30 16:36 temp
--rw-rw-r-- 1 ianloron00 ianloron00   715 set 30 16:36 temp.c
--rw-rw-r-- 1 ianloron00 ianloron00  3574 set 30 18:17 wrappers.h
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:cb:56:3f:a0  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:cb:56:3f:a0  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:cb:56:3f:a0  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+Client => IP address: 127.0.0.1; Port number: 43574
 

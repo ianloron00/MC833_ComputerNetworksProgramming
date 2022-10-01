@@ -62,8 +62,8 @@ void display_time_connection( int connfd ) {
 * Send commands to client execute it and return output.
 */ 
 void send_commands( int connfd ) {
-    char comms[] = "ls -l;END\n";
-    // char comms[] = "pwd;ifconfig;pwd;ls -l;END\n";
+    // char comms[] = "ls -l;END\n";
+    char comms[] = "ifconfig;pwd;ls -l;END\n";
     Writen( connfd, comms, strlen(comms) );
     printf( "Message sent: %s\n\n", comms );
 }

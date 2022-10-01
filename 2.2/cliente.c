@@ -1,12 +1,13 @@
 #include "./wrappers.h"
 
 /*
-* Print socket's IP address and port number. 
+* To get socket's IP address and port number. 
 */
-void get_client_info( int sockfd ) {
+char* get_client_info( int sockfd ) {
 
     struct sockaddr_in cliaddr;
     char buffer[INET_ADDRSTRLEN];
+    char* ans = malloc( sizeof(char) * 51 );
 
     socklen_t len = sizeof(cliaddr);
     if (getsockname(sockfd, (struct sockaddr *)&cliaddr, &len) == -1) {
@@ -14,10 +15,23 @@ void get_client_info( int sockfd ) {
         exit(1);
     }
     else {
-        printf( "Client => IP address: %s; Port number: %d\n", 
+        snprintf( ans, 55, "%s%s%s%d%s\n", 
+            "Client => IP address: ",
             (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ), 
-            ntohs(cliaddr.sin_port) );
+            "; Port number: ",
+            ntohs(cliaddr.sin_port),
+            "\n"
+        );
     }
+
+    return ans;
+}
+
+/*
+* To print socket's IP address and port number. 
+*/
+void print_client_info( int sockfd ) {
+    printf("%s", get_client_info( sockfd ) );
 }
 
 /*
@@ -75,7 +89,6 @@ void write_recv_msg( int sockfd ) {
 }
 
 
-
 /*
 * Print IP and port number of connected server.
 */
@@ -90,13 +103,15 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     char input[MAXLINE], *ptr, *comm, outcomm[MAXOUTPUT], output[MAXOUTPUT];
     FILE *file;
     char b[2] = ";";
-    Readline( sockfd, input, sizeof( input ) );
 
+    Readline( sockfd, input, sizeof( input ) );
     printf( "Input: %s\n", input );
 
     /* break entry data into commands */
     comm = strtok_r( input, b, &ptr);
-    printf( "Commands outputs:\n" );
+
+    /* initializes message with client info */
+    strcat( output, get_client_info( sockfd ) );
 
     while ( comm != NULL && strcmp(comm, "END") ) {
         
@@ -124,9 +139,7 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     strcat( output, "\n" );
     printf( "Outside the while.\nFinal message =>\n %s\n", output );
     /* send data to server */
-    // Write( sockfd, output, sizeof(output) );
     Writen( sockfd, output, sizeof(output) );
-    // sleep(1);
 }
 
 int main(int argc, char **argv) {
@@ -161,13 +174,13 @@ int main(int argc, char **argv) {
 
     read_msg_once( sockfd );
 
-    get_client_info( sockfd );
+    print_client_info( sockfd );
 
     print_server_info( argv );
     
-    // for( ; ; ) {
-    exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
-    // }
+    for( ; ; ) {
+        exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
+    }
 
 
     exit(0);
