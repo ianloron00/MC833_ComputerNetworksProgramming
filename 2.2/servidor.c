@@ -1,68 +1,10 @@
 #include "./wrappers.h"
-
-#define LISTENQ 10
-#define MAXDATASIZE 100
-
-
-/*
-* Print connected peer socket's IP address and port number. 
-*/
-void get_peer_port( int sockfd ) {
-
-    struct sockaddr_in peeraddr;
-    char buffer[INET_ADDRSTRLEN];
-
-    socklen_t len = sizeof(peeraddr);
-    if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &len) == -1) {
-        perror("getpeername");
-        exit(1);
-    }
-    else {
-        printf( "(A client) => IP address: %s; Port number: %d\n", 
-            (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ),
-            ntohs(peeraddr.sin_port) );
-    }
-}
-
-/* 
-* Read message from client and write to standard output 
-*/
-void read_msg( int sockfd ) {
-    ssize_t n;
-    char recvline[MAXLINE];
-
-    n = Readline ( sockfd, recvline, MAXLINE );
-    if (n) {
-        printf("server received message of size = %ld: %s\n", n, recvline);
-        memset(recvline, 0, n);
-    }
-
-    else if(n == 0) {
-		puts("Client disconnected");
-		fflush(stdout);
-	}
-}
-
-/* 
-* Prints time of connection with client and sends its time 
-*/
-void display_time_connection( int connfd ) {
-    char   buf[MAXDATASIZE];
-    time_t ticks;
-
-    /* prints the time a connection is established 
-    and send to client */
-    ticks = time(NULL);
-    printf( "Connection established at: %.24s\r\n", ctime(&ticks) );
-    snprintf( buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks) );
-    Writen(connfd, buf, strlen(buf));
-}
+#include "./auxiliary.h"
 
 /*
 * Send commands to client execute it and return output.
 */ 
 void send_commands( int connfd ) {
-    // char comms[] = "ls -l;END\n";
     char comms[] = "ifconfig;pwd;ls -l;END\n";
     Writen( connfd, comms, strlen(comms) );
     printf( "Message sent: %s\n\n", comms );
@@ -74,9 +16,8 @@ void send_commands( int connfd ) {
 void save_result_commands( int connfd ) {
     char rec[MAXOUTPUT];
     FILE *file;
-    
-    Readtext( connfd, rec, sizeof(rec) );
-    printf( "Received message =>\n %s\n", rec );
+    ssize_t n = Readtext( connfd, rec, sizeof(rec) );
+    printf( "Message of size %ld received\n", n );
     file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a+");
     fprintf(file, "%s\n", rec );
 }
@@ -92,8 +33,6 @@ void doit( int connfd ) {
     sleep( 1 );
     send_commands( connfd );
     save_result_commands( connfd );
-    
-    // read_msg(connfd);
 }
 
 int main (int argc, char **argv) {

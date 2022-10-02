@@ -12,6 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <ctype.h>
 
 #define MAXLINE 4096
 #define MAXOUTPUT 16384
@@ -39,6 +40,12 @@ static ssize_t my_read( int fd, char *ptr ) {
     return (1);
 }
 
+ssize_t readbuf( void **vptrptr ) {
+    if ( read_cnt )
+        *vptrptr = read_ptr;
+    return (read_cnt);
+}
+
 ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
     ssize_t n = 1, rc;
     char c, *ptr;
@@ -60,23 +67,16 @@ ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
     return (n - 1);
 }
 
+
 ssize_t Readtext ( int fd, void *vptr, size_t maxlen ) {
     ssize_t n = 0, m;
     char line[MAXLINE];
     while ( ( m = read( fd, line, sizeof(line) ) ) > 0 ) {
         n += m;
         strcat( vptr, line );
-        printf( "Line read => %s", line );
     }
 
-    printf("Final text =>\n %s\n", (const char*) vptr );
     return n;
-}
-
-ssize_t readbuf( void **vptrptr ) {
-    if ( read_cnt )
-        *vptrptr = read_ptr;
-    return (read_cnt);
 }
 
 int Socket ( int family, int type, int flags ) {
@@ -119,16 +119,8 @@ ssize_t Writen( int fd, const void *vptr, size_t n ) {
         ptr += nwritten;
     }
 
-    printf("message sent.\n");
+    printf("Message of size %ld sent.\n", n );
     return (n);
-}
-
-size_t Write( int fd, const void* line, ssize_t len ) {
-    size_t n;
-    if ( ( n = Writen( fd, line, len ) ) > 0 ) {
-        printf( "Sending =>\n %s\n", (const char*) line );
-    }
-    return n;
 }
 
 int Accept ( int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen ) {

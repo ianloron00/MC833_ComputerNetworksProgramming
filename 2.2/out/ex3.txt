@@ -1,0 +1,96 @@
+Client => IP address: 127.0.0.1; Port number: 50936
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:32:27:41:fe  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 669  bytes 257653 (257.6 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 669  bytes 257653 (257.6 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+wlp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.15.102  netmask 255.255.255.0  broadcast 192.168.15.255
+        inet6 2804:431:c7ef:646d:ef97:93f3:9286:ca76  prefixlen 64  scopeid 0x0<global>
+        inet6 2804:431:c7ef:646d:a867:9d0d:214c:d422  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::2604:f5c7:886:7bce  prefixlen 64  scopeid 0x20<link>
+        ether 98:22:ef:d9:61:c7  txqueuelen 1000  (Ethernet)
+        RX packets 537804  bytes 780331362 (780.3 MB)
+        RX errors 0  dropped 17  overruns 0  frame 0
+        TX packets 265380  bytes 32080486 (32.0 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+/home/ianloron00/grad/833/MC833/2.2
+total 196
+-rw-rw-r-- 1 ianloron00 ianloron00  3750 out  2 00:49 auxiliary.h
+-rwxrwxr-x 1 ianloron00 ianloron00 23336 out  2 11:55 cliente
+-rw-rw-r-- 1 ianloron00 ianloron00  2564 out  2 11:55 cliente.c
+-rw-rw-r-- 1 ianloron00 ianloron00 95313 set 22 21:19 Exercicio2_2-ServidorTCPConcorrente.pdf
+drwxrwxr-x 2 ianloron00 ianloron00  4096 out  2 11:56 out
+drwxrwxr-x 2 ianloron00 ianloron00  4096 out  2 11:52 prints
+-rwxrwxr-x 1 ianloron00 ianloron00   601 set 22 21:17 run.sh
+-rwxrwxr-x 1 ianloron00 ianloron00 23152 out  2 11:50 servidor
+-rw-rw-r-- 1 ianloron00 ianloron00  2226 out  2 11:50 servidor.c
+-rwxrwxr-x 1 ianloron00 ianloron00 16880 out  1 22:42 temp
+-rw-rw-r-- 1 ianloron00 ianloron00   745 out  1 22:46 temp.c
+-rw-rw-r-- 1 ianloron00 ianloron00  3286 out  2 11:50 wrappers.h
+
+Hello from server!
+Time: Sun Oct  2 11:56:27 2022
+
+Client => IP address: 127.0.0.1; Port number: 50938
+
+docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:32:27:41:fe  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 678  bytes 274595 (274.5 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 678  bytes 274595 (274.5 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+wlp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.15.102  netmask 255.255.255.0  broadcast 192.168.15.255
+        inet6 2804:431:c7ef:646d:ef97:93f3:9286:ca76  prefixlen 64  scopeid 0x0<global>
+        inet6 2804:431:c7ef:646d:a867:9d0d:214c:d422  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::2604:f5c7:886:7bce  prefixlen 64  scopeid 0x20<link>
+        ether 98:22:ef:d9:61:c7  txqueuelen 1000  (Ethernet)
+        RX packets 537826  bytes 780335039 (780.3 MB)
+        RX errors 0  dropped 17  overruns 0  frame 0
+        TX packets 265384  bytes 32080950 (32.0 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+/home/ianloron00/grad/833/MC833/2.2
+total 196
+-rw-rw-r-- 1 ianloron00 ianloron00  3750 out  2 00:49 auxiliary.h
+-rwxrwxr-x 1 ianloron00 ianloron00 23336 out  2 11:55 cliente
+-rw-rw-r-- 1 ianloron00 ianloron00  2564 out  2 11:55 cliente.c
+-rw-rw-r-- 1 ianloron00 ianloron00 95313 set 22 21:19 Exercicio2_2-ServidorTCPConcorrente.pdf
+drwxrwxr-x 2 ianloron00 ianloron00  4096 out  2 11:56 out
+drwxrwxr-x 2 ianloron00 ianloron00  4096 out  2 11:52 prints
+-rwxrwxr-x 1 ianloron00 ianloron00   601 set 22 21:17 run.sh
+-rwxrwxr-x 1 ianloron00 ianloron00 23152 out  2 11:50 servidor
+-rw-rw-r-- 1 ianloron00 ianloron00  2226 out  2 11:50 servidor.c
+-rwxrwxr-x 1 ianloron00 ianloron00 16880 out  1 22:42 temp
+-rw-rw-r-- 1 ianloron00 ianloron00   745 out  1 22:46 temp.c
+-rw-rw-r-- 1 ianloron00 ianloron00  3286 out  2 11:50 wrappers.h
+
+Hello from server!
+Time: Sun Oct  2 11:56:34 2022
+

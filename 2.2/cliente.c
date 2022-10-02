@@ -1,92 +1,5 @@
 #include "./wrappers.h"
-
-/*
-* To get socket's IP address and port number. 
-*/
-char* get_client_info( int sockfd ) {
-
-    struct sockaddr_in cliaddr;
-    char buffer[INET_ADDRSTRLEN];
-    char* ans = malloc( sizeof(char) * 51 );
-
-    socklen_t len = sizeof(cliaddr);
-    if (getsockname(sockfd, (struct sockaddr *)&cliaddr, &len) == -1) {
-        perror("getsockname");
-        exit(1);
-    }
-    else {
-        snprintf( ans, 55, "%s%s%s%d%s\n", 
-            "Client => IP address: ",
-            (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ), 
-            "; Port number: ",
-            ntohs(cliaddr.sin_port),
-            "\n"
-        );
-    }
-
-    return ans;
-}
-
-/*
-* To print socket's IP address and port number. 
-*/
-void print_client_info( int sockfd ) {
-    printf("%s", get_client_info( sockfd ) );
-}
-
-/*
-* Reads message from server, only once.
-*/
-char read_msg_once( int sockfd ) {
-
-    ssize_t n;
-    char recvline[MAXLINE];
-
-    if ( (n = read(sockfd, recvline, MAXLINE)) > 0) {
-        if (fputs(recvline, stdout) == EOF) {
-            perror("fputs error");
-            exit(1);
-        }
-        recvline[n] = 0;
-    }
-
-    if (n < 0) {
-        perror("read error");
-        exit(1);
-    }
-
-    return (n > 0);
-}
-
-/*
-* Reads message from server.
-*/
-void read_msg( int sockfd ) {
-    
-    ssize_t n = read_msg_once( sockfd );
-    
-    while ( n > 0 ) {
-        n = read_msg_once( sockfd );
-    }
-}
-
-/* 
-* Read message from standard input and write to server 
-*/
-void write_recv_msg( int sockfd ) {
-
-    char sendline[MAXLINE];
-
-    printf( "Write a message: " );
-    fgets( sendline, MAXLINE, stdin );
-        
-    if ( send ( sockfd, sendline, strlen(sendline), 0 ) < 0 ) {
-        perror("send failed.");
-    }
-    else {
-        puts("Message sent to the server.\n");
-    }
-}
+#include "./auxiliary.h"
 
 
 /*
@@ -99,6 +12,14 @@ void print_server_info( char** argv ) {
     (char *) argv[2] );
 }
 
+void print_inverted_input( char* argv, ssize_t n ) {
+    printf( "Inverted upper input: " );
+    for ( int i = n-1; i >= 0; i-- ) {
+        printf( "%c", toupper( argv[i] ) );
+    }
+    printf("\n\n");
+}
+
 void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     char input[MAXLINE], *ptr, *comm, outcomm[MAXOUTPUT], output[MAXOUTPUT];
     FILE *file;
@@ -106,6 +27,7 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
 
     Readline( sockfd, input, sizeof( input ) );
     printf( "Input: %s\n", input );
+    print_inverted_input( input, sizeof(input) );
 
     /* initializes message with client info */
     strcat( output, get_client_info( sockfd ) );
@@ -115,7 +37,7 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
 
     /* reads and compiles  each instruction
     and saves its output in a buffer */
-    while ( comm != NULL && strcmp(comm, "END") ) {
+    while ( comm != NULL && strcmp(comm, "END\n") ) {
         
         file = popen( comm, "r" );
         if(!file){
@@ -133,17 +55,9 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
         comm = strtok_r( NULL, b, &ptr );
     }
     strcat( output, "\n" );
-    printf( "Outside the while.\nFinal message =>\n %s\n", output );
+    // printf( "Outside the while.\nFinal message =>\n %s\n", output );
     /* send data to server */
     Writen( sockfd, output, sizeof(output) );
-
-    /* breaks buffer content to send each line separately */
-    // char* line = strtok( output, "\n" );
-    // while ( line != NULL ) {
-    //     printf( "Sending line => %s\n", line );
-    //     Writen( sockfd, line, MAXLINE );
-    //     line = strtok( NULL, "\n" );
-    // }
 }
 
 int main(int argc, char **argv) {
