@@ -63,7 +63,7 @@ ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
 ssize_t Readtext ( int fd, void *vptr, size_t maxlen ) {
     ssize_t n = 0, m;
     char line[MAXLINE];
-    while ( ( m = Readline( fd, line, sizeof(line) ) ) > 1 ) {
+    while ( ( m = read( fd, line, sizeof(line) ) ) > 0 ) {
         n += m;
         strcat( vptr, line );
         printf( "Line read => %s", line );

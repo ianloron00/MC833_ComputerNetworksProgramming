@@ -107,15 +107,16 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     Readline( sockfd, input, sizeof( input ) );
     printf( "Input: %s\n", input );
 
-    /* break entry data into commands */
-    comm = strtok_r( input, b, &ptr);
-
     /* initializes message with client info */
     strcat( output, get_client_info( sockfd ) );
 
+    /* break entry data into commands */
+    comm = strtok_r( input, b, &ptr);
+
+    /* reads and compiles  each instruction
+    and saves its output in a buffer */
     while ( comm != NULL && strcmp(comm, "END") ) {
         
-        printf("Entered while\n");
         file = popen( comm, "r" );
         if(!file){
             fprintf(stderr, "Could not open pipe for input <%s>.\n", comm );
@@ -129,17 +130,20 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
         }
 
         pclose( file );
-        printf("closed\n");
         comm = strtok_r( NULL, b, &ptr );
-        printf("next command: %s\n", comm );
     }
-    if ( comm != NULL )
-        printf("comp: %s %d  ", comm, strcmp( comm , "END" ) );
-    
     strcat( output, "\n" );
     printf( "Outside the while.\nFinal message =>\n %s\n", output );
     /* send data to server */
     Writen( sockfd, output, sizeof(output) );
+
+    /* breaks buffer content to send each line separately */
+    // char* line = strtok( output, "\n" );
+    // while ( line != NULL ) {
+    //     printf( "Sending line => %s\n", line );
+    //     Writen( sockfd, line, MAXLINE );
+    //     line = strtok( NULL, "\n" );
+    // }
 }
 
 int main(int argc, char **argv) {
