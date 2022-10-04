@@ -18,7 +18,7 @@ void save_result_commands( int connfd ) {
     FILE *file;
     ssize_t n = Readtext( connfd, rec, sizeof(rec) );
     printf( "Message of size %ld received\n", n );
-    file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a+");
+    file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a");
     printf("received =>\n%s\n", rec );
     fprintf(file, "%s\n", rec );
     fclose( file );
@@ -46,13 +46,21 @@ int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
     pid_t pid;
+    char   error[MAXLINE + 1];
 
-    listenfd = Socket( AF_INET, SOCK_STREAM, 0 );
+    if (argc != 2) {
+        strcpy(error,"Definir: ");
+        strcat(error,argv[0]);
+        strcat(error," <Port> ");
+        perror(error);
+        exit(1);
+    }
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family      = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    servaddr.sin_port        = 0;   
+    servaddr.sin_port        = htons( (unsigned short int) atoi(argv[1]) );  
+    listenfd = Socket( AF_INET, SOCK_STREAM, 0 );
     
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) == -1) {
         perror("bind");

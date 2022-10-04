@@ -1,17 +1,6 @@
 #include "./wrappers.h"
 #include "./auxiliary.h"
 
-
-/*
-* Print IP and port number of connected server.
-*/
-// void print_server_info( char** argv ) {
-
-//     printf( "(Server) => IP address: %s; Port number: %s\n", 
-//     (char *) argv[1], 
-//     (char *) argv[2] );
-// }
-
 /*
 * ex. 5 - print inverted and uppercase input
 */
@@ -34,6 +23,7 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
 
     /* initializes message with client info */
     strcat( output, get_sock_info( sockfd, 0 ) );
+    strcat( output, "\n" );
 
     /* break entry data into commands */
     comm = strtok_r( input, b, &ptr);
@@ -58,11 +48,8 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
         comm = strtok_r( NULL, b, &ptr );
     }
     strcat( output, "\n" );
-    // printf( "Outside the while.\nFinal message =>\n %s\n", output );
     /* send data to server */
     Writen( sockfd, output, sizeof(output) );
-
-    // Close( sockfd );
 }
 
 int main(int argc, char **argv) {
@@ -101,10 +88,11 @@ int main(int argc, char **argv) {
 
     print_peer_info( sockfd, 0 );
     
-    for( ; ; ) {
-        exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
-    }
+    // for( ; ; ) {
+    exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
+    // }
 
+    Close( sockfd );
 
     exit(0);
 }

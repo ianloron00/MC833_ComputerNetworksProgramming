@@ -92,55 +92,6 @@ char* get_sock_info( int sockfd, int isServer ) {
     return ans;
 }
 
-
-/*
-* Print IP and port number of connected server.
-*/
-// void print_server_info( char** argv ) {
-
-//     printf( "(Server) => IP address: %s; Port number: %s\n", 
-//     (char *) argv[1], 
-//     (char *) argv[2] );
-// }
-
-// /*
-// * Print connected peer socket's IP address and port number. 
-// */
-// char* get_peer_info( int sockfd, int isServer ) {
-    
-//     int len = 100;
-//     char* ans = malloc( sizeof(char)  * len );
-
-//     // snprintf( ans, len,
-//     //     isServer 
-//     //     ? "(A client) => %s"
-//     //     : "(Server) => %s",
-//     //     get_info( sockfd )
-//     // );
-
-//     // return ans;
-
-//     struct sockaddr_in peeraddr;
-//     char buffer[INET_ADDRSTRLEN];
-
-//     socklen_t buflen = sizeof(peeraddr);
-//     if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen) == -1) {
-//         perror("getpeername");
-//         exit(1);
-//     }
-//     else {
-//         snprintf( ans, len,
-//             isServer 
-//             ? "(A client) => IP address: %s; port number: %d"
-//             : "(Server) => IP address: %s; port number: %d",
-//             (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ),
-//             ntohs(peeraddr.sin_port)
-//         );
-//     }
-
-//     return ans;
-// }
-
 /*
 * To print socket's IP address and port number. 
 */
@@ -180,7 +131,7 @@ void print_peer_info( int sockfd, int isServer ) {
 
 void write_info( int sockfd, char* info ) {
     FILE *file;
-    file = fopen( "/home/ianloron00/grad/833/MC833/2.2/out/server_info.txt", "a+" );
+    file = fopen( "/home/ianloron00/grad/833/MC833/2.2/out/server_info.txt", "a" );
     
     fprintf( file, "%s\n", info );
 
