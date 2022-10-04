@@ -49,6 +49,34 @@ char* get_info( int sockfd ) {
 }
 
 /*
+* Print connected peer socket's IP address and port number. 
+*/
+char* get_peer_info( int sockfd, int isServer ) {
+    
+    char buffer[INET_ADDRSTRLEN];
+    struct sockaddr_in peeraddr;
+    int len = 100;
+    char* ans = malloc( sizeof(char)  * len );
+
+    socklen_t buflen = sizeof(peeraddr);
+    if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen) == -1) {
+        perror("getpeername");
+        exit(1);
+    }
+    else {
+        snprintf( ans, len,
+            isServer 
+            ? "(A client) => IP address: %s; port number: %d"
+            : "(Server) => IP address: %s; port number: %d",
+            (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ),
+            ntohs(peeraddr.sin_port)
+        );
+    }
+
+    return ans;
+}
+
+/*
 * Print socket's IP address and port number. 
 */
 char* get_sock_info( int sockfd, int isServer ) {
@@ -64,23 +92,54 @@ char* get_sock_info( int sockfd, int isServer ) {
     return ans;
 }
 
+
 /*
-* Print connected peer socket's IP address and port number. 
+* Print IP and port number of connected server.
 */
-char* get_peer_info( int sockfd, int isServer ) {
+// void print_server_info( char** argv ) {
+
+//     printf( "(Server) => IP address: %s; Port number: %s\n", 
+//     (char *) argv[1], 
+//     (char *) argv[2] );
+// }
+
+// /*
+// * Print connected peer socket's IP address and port number. 
+// */
+// char* get_peer_info( int sockfd, int isServer ) {
     
-    int len = 100;
-    char* ans = malloc( sizeof(char)  * len );
+//     int len = 100;
+//     char* ans = malloc( sizeof(char)  * len );
 
-    snprintf( ans, len,
-        isServer 
-        ? "(A client) => %s"
-        : "(Server) => %s",
-        get_info( sockfd )
-    );
+//     // snprintf( ans, len,
+//     //     isServer 
+//     //     ? "(A client) => %s"
+//     //     : "(Server) => %s",
+//     //     get_info( sockfd )
+//     // );
 
-    return ans;
-}
+//     // return ans;
+
+//     struct sockaddr_in peeraddr;
+//     char buffer[INET_ADDRSTRLEN];
+
+//     socklen_t buflen = sizeof(peeraddr);
+//     if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen) == -1) {
+//         perror("getpeername");
+//         exit(1);
+//     }
+//     else {
+//         snprintf( ans, len,
+//             isServer 
+//             ? "(A client) => IP address: %s; port number: %d"
+//             : "(Server) => IP address: %s; port number: %d",
+//             (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ),
+//             ntohs(peeraddr.sin_port)
+//         );
+//     }
+
+//     return ans;
+// }
 
 /*
 * To print socket's IP address and port number. 
@@ -168,6 +227,8 @@ char read_msg_once( int sockfd ) {
             perror("fputs error");
             exit(1);
         }
+        fflush( stdout );
+        // printf( "%s\n", recvline );
         recvline[n] = 0;
     }
 

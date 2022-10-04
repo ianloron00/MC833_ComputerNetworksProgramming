@@ -19,6 +19,7 @@ void save_result_commands( int connfd ) {
     ssize_t n = Readtext( connfd, rec, sizeof(rec) );
     printf( "Message of size %ld received\n", n );
     file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a+");
+    printf("received =>\n%s\n", rec );
     fprintf(file, "%s\n", rec );
     fclose( file );
 }
@@ -38,6 +39,9 @@ void doit( int connfd ) {
     save_result_commands( connfd );
 }
 
+/*
+* FALTA RECEBER INPUT DA PORTA
+*/
 int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
@@ -59,7 +63,6 @@ int main (int argc, char **argv) {
     Listen( listenfd, LISTENQ );  
 
     write_sock_info( listenfd, 1 );
-    write_peer_info( listenfd, 1 );
 
     for ( ; ; ) {
         

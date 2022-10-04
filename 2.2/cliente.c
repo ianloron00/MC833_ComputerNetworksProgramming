@@ -61,6 +61,8 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     // printf( "Outside the while.\nFinal message =>\n %s\n", output );
     /* send data to server */
     Writen( sockfd, output, sizeof(output) );
+
+    // Close( sockfd );
 }
 
 int main(int argc, char **argv) {
