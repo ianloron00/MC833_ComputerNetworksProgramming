@@ -20,33 +20,64 @@
 #define MAXDATASIZE 100
 
 #endif
-/*
- *  ---- CLIENT ----
-*/
+
 
 /*
 * To get socket's IP address and port number. 
 */
-char* get_client_info( int sockfd ) {
+char* get_info( int sockfd ) {
 
     struct sockaddr_in cliaddr;
     char buffer[INET_ADDRSTRLEN];
-    char* ans = malloc( sizeof(char) * 51 );
+    int len = 100;
+    char* ans = malloc( sizeof(char) * len );
 
-    socklen_t len = sizeof(cliaddr);
-    if (getsockname(sockfd, (struct sockaddr *)&cliaddr, &len) == -1) {
+    socklen_t clilen = sizeof(cliaddr);
+    if (getsockname(sockfd, (struct sockaddr *)&cliaddr, &clilen) == -1) {
         perror("getsockname");
         exit(1);
     }
+
     else {
-        snprintf( ans, 55, "%s%s%s%d%s\n", 
-            "Client => IP address: ",
+        snprintf( ans, len, "IP address: %s; Port number: %d", 
             (char *) inet_ntop(AF_INET, &cliaddr.sin_addr, buffer, sizeof(buffer) ), 
-            "; Port number: ",
-            ntohs(cliaddr.sin_port),
-            "\n"
+            ntohs(cliaddr.sin_port)
         );
     }
+
+    return ans;
+}
+
+/*
+* Print socket's IP address and port number. 
+*/
+char* get_sock_info( int sockfd, int isServer ) {
+    int len = 100;
+    char* ans = malloc( sizeof(char)  * len );
+    snprintf( ans, len,
+        isServer 
+        ? "Server => %s"
+        : "Client => %s",
+        get_info( sockfd )
+    );
+
+    return ans;
+}
+
+/*
+* Print connected peer socket's IP address and port number. 
+*/
+char* get_peer_info( int sockfd, int isServer ) {
+    
+    int len = 100;
+    char* ans = malloc( sizeof(char)  * len );
+
+    snprintf( ans, len,
+        isServer 
+        ? "(A client) => %s"
+        : "(Server) => %s",
+        get_info( sockfd )
+    );
 
     return ans;
 }
@@ -55,9 +86,75 @@ char* get_client_info( int sockfd ) {
 * To print socket's IP address and port number. 
 */
 void print_client_info( int sockfd ) {
-    printf("%s", get_client_info( sockfd ) );
+    printf("%s\n", get_sock_info( sockfd, 0 ) );
 }
 
+/* 
+* print server IP and port number 
+*/
+int print_server_info( int listenfd ) {
+    return printf( "%s\n", get_sock_info( listenfd, 1 ) );
+}
+
+/* 
+* Read message from standard input and write to server 
+*/
+void write_recv_msg( int sockfd ) {
+
+    char sendline[MAXLINE];
+
+    printf( "Write a message: " );
+    fgets( sendline, MAXLINE, stdin );
+        
+    if ( send ( sockfd, sendline, strlen(sendline), 0 ) < 0 ) {
+        perror("send failed.");
+    }
+    else {
+        puts("Message sent to the server.\n");
+    }
+}
+
+
+void print_peer_info( int sockfd, int isServer ) {
+    printf( "%s\n", get_peer_info( sockfd, isServer ) ); 
+}
+
+void write_info( int sockfd, char* info ) {
+    FILE *file;
+    file = fopen( "/home/ianloron00/grad/833/MC833/2.2/out/server_info.txt", "a+" );
+    
+    fprintf( file, "%s\n", info );
+
+    fclose( file );
+}
+
+void write_sock_info( int sockfd, int isServer ) {
+    write_info( sockfd, get_sock_info( sockfd, isServer ) );
+}
+
+void write_peer_info( int sockfd, int isServer ) {
+    write_info( sockfd, get_peer_info( sockfd, isServer ) );
+}
+/* 
+* Prints time of connection with client and sends its time 
+*/
+void display_time_connection( int connfd ) {
+    char   buf[MAXDATASIZE];
+    time_t ticks;
+
+    /* prints the time a connection is established 
+    and send to client */
+    ticks = time(NULL);
+    printf( "Connection established at: %.24s\r\n", ctime(&ticks) );
+    snprintf( buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks) );
+    Writen(connfd, buf, strlen(buf));
+}
+
+
+
+/*
+* -- Client --
+*/
 /*
 * Reads message from server and print it.
 */
@@ -92,77 +189,4 @@ void read_msg( int sockfd ) {
     while ( n > 0 ) {
         n = read_msg_once( sockfd );
     }
-}
-
-/* 
-* Read message from standard input and write to server 
-*/
-void write_recv_msg( int sockfd ) {
-
-    char sendline[MAXLINE];
-
-    printf( "Write a message: " );
-    fgets( sendline, MAXLINE, stdin );
-        
-    if ( send ( sockfd, sendline, strlen(sendline), 0 ) < 0 ) {
-        perror("send failed.");
-    }
-    else {
-        puts("Message sent to the server.\n");
-    }
-}
-
-
-
-
-/*
- *  ---- SERVER ----
-*/
-// void get_server_info( int listenfd, const struct sockaddr *servaddr ) {
-//     char buffer[INET_ADDRSTRLEN];
-
-//     socklen_t len = sizeof(servaddr);
-//     if (getsockname(listenfd, (struct sockaddr *)&servaddr, &len) == -1) {
-//         perror("getsockname");
-//         exit(1);
-//     }
-//     else {
-//         printf( "Server => IP address: %s, Port number: %d\n", 
-//         (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ),
-//         ntohs(servaddr.sin_port) );
-//     }
-// }
-/*
-* Print connected peer socket's IP address and port number. 
-*/
-void get_peer_port( int sockfd ) {
-
-    struct sockaddr_in peeraddr;
-    char buffer[INET_ADDRSTRLEN];
-
-    socklen_t len = sizeof(peeraddr);
-    if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &len) == -1) {
-        perror("getpeername");
-        exit(1);
-    }
-    else {
-        printf( "(A client) => IP address: %s; Port number: %d\n", 
-            (char *) inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer) ),
-            ntohs(peeraddr.sin_port) );
-    }
-}
-
-/* 
-* Prints time of connection with client and sends its time 
-*/
-void display_time_connection( int connfd ) {
-    char   buf[MAXDATASIZE];
-    time_t ticks;
-
-    /* prints the time a connection is established 
-    and send to client */
-    ticks = time(NULL);
-    printf( "Connection established at: %.24s\r\n", ctime(&ticks) );
-    snprintf( buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks) );
-    Writen(connfd, buf, strlen(buf));
 }

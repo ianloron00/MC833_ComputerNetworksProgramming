@@ -5,13 +5,16 @@
 /*
 * Print IP and port number of connected server.
 */
-void print_server_info( char** argv ) {
+// void print_server_info( char** argv ) {
 
-    printf( "(Server) => IP address: %s; Port number: %s\n", 
-    (char *) argv[1], 
-    (char *) argv[2] );
-}
+//     printf( "(Server) => IP address: %s; Port number: %s\n", 
+//     (char *) argv[1], 
+//     (char *) argv[2] );
+// }
 
+/*
+* ex. 5 - print inverted and uppercase input
+*/
 void print_inverted_input( char* argv, ssize_t n ) {
     printf( "Inverted upper input: " );
     for ( int i = n-1; i >= 0; i-- ) {
@@ -30,7 +33,7 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     print_inverted_input( input, sizeof(input) );
 
     /* initializes message with client info */
-    strcat( output, get_client_info( sockfd ) );
+    strcat( output, get_sock_info( sockfd, 0 ) );
 
     /* break entry data into commands */
     comm = strtok_r( input, b, &ptr);
@@ -94,7 +97,7 @@ int main(int argc, char **argv) {
 
     print_client_info( sockfd );
 
-    print_server_info( argv );
+    print_peer_info( sockfd, 0 );
     
     for( ; ; ) {
         exec_server_commands( sockfd, (struct sockaddr *) &servaddr );

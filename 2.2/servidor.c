@@ -20,7 +20,10 @@ void save_result_commands( int connfd ) {
     printf( "Message of size %ld received\n", n );
     file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a+");
     fprintf(file, "%s\n", rec );
+    fclose( file );
 }
+
+// void save_
 
 /*
 * Generic Function to be executed after fork
@@ -28,7 +31,7 @@ void save_result_commands( int connfd ) {
 void doit( int connfd ) {
     
     display_time_connection( connfd );
-    get_peer_port( connfd );
+    write_peer_info( connfd, 1 );
 
     sleep( 1 );
     send_commands( connfd );
@@ -39,7 +42,6 @@ int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
     pid_t pid;
-    char buffer[INET_ADDRSTRLEN];
 
     listenfd = Socket( AF_INET, SOCK_STREAM, 0 );
 
@@ -56,19 +58,8 @@ int main (int argc, char **argv) {
 
     Listen( listenfd, LISTENQ );  
 
-    /*
-    * to print chosen IP address and port number. 
-    */
-    socklen_t len = sizeof(servaddr);
-    if (getsockname(listenfd, (struct sockaddr *)&servaddr, &len) == -1) {
-        perror("getsockname");
-        exit(1);
-    }
-    else {
-        printf( "Server => IP address: %s, Port number: %d\n", 
-        (char *) inet_ntop(AF_INET, &servaddr.sin_addr, buffer, sizeof(buffer) ),
-        ntohs(servaddr.sin_port) );
-    }
+    write_sock_info( listenfd, 1 );
+    write_peer_info( listenfd, 1 );
 
     for ( ; ; ) {
         
