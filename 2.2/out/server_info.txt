@@ -1,2 +1,0 @@
-Server => IP address: 127.0.0.1; Port number: 1000
-(A client) => IP address: 127.0.0.1; port number: 35818

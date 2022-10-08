@@ -1,0 +1,6 @@
+Server => IP address: 127.0.0.1; Port number: 5000
+Connection started! 
+Time: Fri Oct  7 22:54:50 2022
+(A client) => IP address: 127.0.0.1; port number: 51430
+Connection closed. 
+Time: Fri Oct  7 22:54:51 2022

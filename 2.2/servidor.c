@@ -7,7 +7,6 @@
 void send_commands( int connfd ) {
     char comms[] = "ifconfig;pwd;ls -l;END\n";
     Writen( connfd, comms, strlen(comms) );
-    printf( "Message sent: %s\n\n", comms );
 }
 
 /*
@@ -16,32 +15,36 @@ void send_commands( int connfd ) {
 void save_result_commands( int connfd ) {
     char rec[MAXOUTPUT];
     FILE *file;
-    ssize_t n = Readtext( connfd, rec, sizeof(rec) );
-    printf( "Message of size %ld received\n", n );
+    
+    Readtext( connfd, rec, sizeof(rec) );
     file = fopen("/home/ianloron00/grad/833/MC833/2.2/out/output.txt", "a");
-    printf("received =>\n%s\n", rec );
     fprintf(file, "%s\n", rec );
     fclose( file );
 }
 
-// void save_
-
 /*
 * Generic Function to be executed after fork
 */
-void doit( int connfd ) {
-    
-    display_time_connection( connfd );
-    write_peer_info( connfd, 1 );
+void doit( int connfd ) { 
+    char hello[55] = "Hello from server!\n";
+    char* time_conn = get_time_connection();
 
+    write_info( "Connection started! " );
+    write_info( time_conn );
+
+    strcat( hello, (const char *) time_conn );
+    strcat( hello, "\n" );
+    Writen( connfd, hello, 55 );
+    // Writen( connfd, (const char *) time_conn, 55 );
+    write_peer_info( connfd, 1 );
     sleep( 1 );
     send_commands( connfd );
     save_result_commands( connfd );
+
+    write_info( "Connection closed. " );
+    write_info( get_time_connection() );
 }
 
-/*
-* FALTA RECEBER INPUT DA PORTA
-*/
 int main (int argc, char **argv) {
     int    listenfd, connfd;
     struct sockaddr_in servaddr;
@@ -85,7 +88,6 @@ int main (int argc, char **argv) {
 
         Close(connfd);
     }
-
 
     return(0);
 }

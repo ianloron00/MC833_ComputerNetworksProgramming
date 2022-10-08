@@ -6,7 +6,7 @@
 */
 void print_inverted_input( char* argv, ssize_t n ) {
     printf( "Inverted upper input: " );
-    for ( int i = n-1; i >= 0; i-- ) {
+    for ( int i = n-2; i >= 0; i-- ) {
         printf( "%c", toupper( argv[i] ) );
     }
     printf("\n\n");
@@ -50,6 +50,7 @@ void exec_server_commands( int sockfd, struct sockaddr* servaddr ) {
     strcat( output, "\n" );
     /* send data to server */
     Writen( sockfd, output, sizeof(output) );
+    printf( "Message sent.\n" );
 }
 
 int main(int argc, char **argv) {
@@ -83,18 +84,12 @@ int main(int argc, char **argv) {
     // Connect( sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr) );
 
     read_msg_once( sockfd );
-
     print_client_info( sockfd );
-
     print_peer_info( sockfd, 0 );
     
-    // for( ; ; ) {
     exec_server_commands( sockfd, (struct sockaddr *) &servaddr );
-    // }
 
     Close( sockfd );
 
     exit(0);
 }
-
-//popen( <comando> );

@@ -119,7 +119,6 @@ ssize_t Writen( int fd, const void *vptr, size_t n ) {
         ptr += nwritten;
     }
 
-    printf("Message of size %ld sent.\n", n );
     return (n);
 }
 

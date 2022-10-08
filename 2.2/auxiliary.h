@@ -129,7 +129,7 @@ void print_peer_info( int sockfd, int isServer ) {
     printf( "%s\n", get_peer_info( sockfd, isServer ) ); 
 }
 
-void write_info( int sockfd, char* info ) {
+void write_info( char* info ) {
     FILE *file;
     file = fopen( "/home/ianloron00/grad/833/MC833/2.2/out/server_info.txt", "a" );
     
@@ -139,28 +139,26 @@ void write_info( int sockfd, char* info ) {
 }
 
 void write_sock_info( int sockfd, int isServer ) {
-    write_info( sockfd, get_sock_info( sockfd, isServer ) );
+    write_info( get_sock_info( sockfd, isServer ) );
 }
 
 void write_peer_info( int sockfd, int isServer ) {
-    write_info( sockfd, get_peer_info( sockfd, isServer ) );
+    write_info( get_peer_info( sockfd, isServer ) );
 }
 /* 
 * Prints time of connection with client and sends its time 
 */
-void display_time_connection( int connfd ) {
-    char   buf[MAXDATASIZE];
+char* get_time_connection() {
     time_t ticks;
-
-    /* prints the time a connection is established 
-    and send to client */
+    int len = 40;
     ticks = time(NULL);
-    printf( "Connection established at: %.24s\r\n", ctime(&ticks) );
-    snprintf( buf, sizeof(buf), "Hello from server!\nTime: %.24s\r\n", ctime(&ticks) );
-    Writen(connfd, buf, strlen(buf));
+    char* strtime = malloc( sizeof(char) * len );
+    
+    snprintf( strtime, len, 
+    "Time: %.24s\r", ctime(&ticks) );
+
+    return strtime;
 }
-
-
 
 /*
 * -- Client --
@@ -179,7 +177,6 @@ char read_msg_once( int sockfd ) {
             exit(1);
         }
         fflush( stdout );
-        // printf( "%s\n", recvline );
         recvline[n] = 0;
     }
 
