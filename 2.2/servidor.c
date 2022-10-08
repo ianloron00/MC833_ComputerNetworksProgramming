@@ -7,6 +7,10 @@
 void send_commands( int connfd ) {
     char comms[] = "ifconfig;pwd;ls -l;END\n";
     Writen( connfd, comms, strlen(comms) );
+    printf( "Message sent to %s\n\t\t: %s\n", 
+        (const char *) get_peer_info( connfd, 1 ), 
+        comms 
+    );
 }
 
 /*
