@@ -1,6 +1,6 @@
 #include "./wrappers.h"
 #include "./auxiliary.h"
-
+// rodar todos ao mesmo tempo com o cliente sem sleep, rodar rapidinho 
 /*
 * Generic Function to be executed after fork
 */
@@ -11,7 +11,7 @@ void doit( int connfd ) {
    // write_conn_info( time_conn );
 
    // write_peer_info( connfd, 1 );
-    sleep( 1 );
+    sleep( 38 );
 
    // write_conn_info( "Connection closed. " );
    // write_conn_info( get_time_connection() );
