@@ -7,14 +7,14 @@
 void doit( int connfd ) { 
     char* time_conn = get_time_connection();
 
-    write_conn_info( "Connection started! " );
-    write_conn_info( time_conn );
+    //write_conn_info( "Connection started! " );
+   // write_conn_info( time_conn );
 
-    write_peer_info( connfd, 1 );
+   // write_peer_info( connfd, 1 );
     sleep( 1 );
 
-    write_conn_info( "Connection closed. " );
-    write_conn_info( get_time_connection() );
+   // write_conn_info( "Connection closed. " );
+   // write_conn_info( get_time_connection() );
 }
 
 int main (int argc, char **argv) {
@@ -22,8 +22,8 @@ int main (int argc, char **argv) {
     struct sockaddr_in servaddr;
     pid_t pid;
     char   error[MAXLINE + 1];
-
-    if (argc != 2) {
+    printf("%d",argc);
+    if (argc !=3) {
         strcpy(error,"Definir: ");
         strcat(error,argv[0]);
         strcat(error," <Port> ");
@@ -42,9 +42,9 @@ int main (int argc, char **argv) {
         exit(1);
     }
 
-    Listen( listenfd, LISTENQ );  
+    Listen( listenfd, (int)atoi(argv[2]));  
 
-    write_sock_info( listenfd, 1 );
+    // write_sock_info( listenfd, 1 );
 
     for ( ; ; ) {
         

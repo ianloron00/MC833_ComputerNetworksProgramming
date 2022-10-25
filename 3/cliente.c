@@ -4,6 +4,7 @@
 void doit( int sockfd, struct sockaddr *servaddr ) {
   print_client_info( sockfd );
   print_peer_info( sockfd, 0 );
+  sleep(1000000);
 }
 
 int main(int argc, char **argv) {

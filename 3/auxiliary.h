@@ -20,7 +20,7 @@
 #define MAXDATASIZE 100
 
 // change it to your path
-#define OUTPUT_CONN_PATH "/home/ianloron00/grad/833/MC833/3/out/connection_info.txt"
+#define OUTPUT_CONN_PATH "~/connection_info.txt"
 
 #endif
 
