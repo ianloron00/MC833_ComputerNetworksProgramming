@@ -1,20 +1,11 @@
 #include "./wrappers.h"
 #include "./auxiliary.h"
-
+// rodar todos ao mesmo tempo com o cliente sem sleep, rodar rapidinho 
 /*
 * Generic Function to be executed after fork
 */
 void doit( int connfd ) { 
-    char* time_conn = get_time_connection();
-
-    write_conn_info( "Connection started! " );
-    write_conn_info( time_conn );
-
-    write_peer_info( connfd, 1 );
-    sleep( 1 );
-
-    write_conn_info( "Connection closed. " );
-    write_conn_info( get_time_connection() );
+    sleep( 30 );
 }
 
 int main (int argc, char **argv) {
@@ -44,7 +35,7 @@ int main (int argc, char **argv) {
 
     Listen( listenfd, (int) atoi(argv[2]) );  
 
-    write_sock_info( listenfd, 1 );
+    // write_sock_info( listenfd, 1 );
 
     for ( ; ; ) {
         

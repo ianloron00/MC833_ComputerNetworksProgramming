@@ -2,22 +2,10 @@
 
 # GET STARTED ==> 
 # Run permission bellow:
-# > chmod +x bash.sh
+# > chmod +x run.sh
 # Then, run the code:
-# > ./bash.sh < function<parameters> >
-# Examples:
-# "./bash.sh run cliente"
-# "./bash.sh del servidor"
+# > ./run.sh cliente servidor
 
-compile() {
-    if [ "$1" == "run" ]
-    then 
-        run "${@:2}"
-    elif [ "$1" == "del" ] 
-    then
-        del "${@:2}"
-    fi
-}
 
 run() {
     for arg in "$@";
@@ -27,13 +15,4 @@ run() {
     done
 }
 
-# you can pass 1+ files to this function
-del() {
-    echo "Deleting <$@> ..."
-    for arg in "$@"; 
-    do
-        rm -f $arg; 
-    done 
-}
-
-compile "$@"
+run "$@"

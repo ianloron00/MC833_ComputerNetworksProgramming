@@ -4,6 +4,8 @@
 void doit( int sockfd, struct sockaddr *servaddr ) {
   print_client_info( sockfd );
   print_peer_info( sockfd, 0 );
+  sleep(10);
+  //sleep(1000000);
 }
 
 int main(int argc, char **argv) {
@@ -24,7 +26,7 @@ int main(int argc, char **argv) {
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
-        perror("inet_pton error");
+        perror("inet_pton error (client)");
         exit(1);
     }
     servaddr.sin_port   = htons( (unsigned short int) atoi(argv[2]) );
