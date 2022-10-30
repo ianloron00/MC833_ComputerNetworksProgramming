@@ -23,10 +23,10 @@ int main (int argc, char **argv) {
     pid_t pid;
     char   error[MAXLINE + 1];
 
-    if (argc != 2) {
+    if (argc != 3) {
         strcpy(error,"Definir: ");
         strcat(error,argv[0]);
-        strcat(error," <Port> ");
+        strcat(error," <Port> <BACKLOG>");
         perror(error);
         exit(1);
     }
@@ -42,7 +42,7 @@ int main (int argc, char **argv) {
         exit(1);
     }
 
-    Listen( listenfd, LISTENQ );  
+    Listen( listenfd, (int) atoi(argv[2]) );  
 
     write_sock_info( listenfd, 1 );
 
