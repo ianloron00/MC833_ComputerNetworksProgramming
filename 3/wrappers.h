@@ -13,15 +13,48 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <signal.h>
 
 #define MAXLINE 4096
 #define MAXOUTPUT 16384
+#define _XOPEN_SOURCE 700
 
 #endif
 
 static int read_cnt;
 static char *read_ptr;
 static char read_buf[MAXLINE];
+
+typedef void Sigfunc(int);
+
+Sigfunc * signal(int signo, Sigfunc *func) {
+  struct sigaction act, oact;
+
+  act.sa_handler = func;
+  sigemptyset( &act.sa_mask );
+  act.sa_flags = 0;
+  if ( signo == SIGALRM ) {
+    #ifdef SA_INTERRUPT
+      act.sa_flags |= SA_INTERRUPT;
+    #endif
+  }
+  else {
+    #ifdef SA_RESTART
+      act.sa_flags |= SA_RESTART;
+    #endif
+  }
+  if ( sigaction( signo, &act, &oact ) < 0 )
+    return (SIG_ERR);
+  
+  return ( oact.sa_handler );
+}
+
+void Signal( int signo, Sigfunc *func ) {
+  if ( signal( signo, func ) < 0 ) {
+    perror("Signal");
+    exit(1);
+  }
+}
 
 static ssize_t my_read( int fd, char *ptr ) {
     if ( read_cnt <= 0 ) {
@@ -153,3 +186,4 @@ pid_t Fork(void) {
 void Close( int fd ) {
     close( fd );
 }
+

@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         strcpy(error,"uso: ");
         strcat(error,argv[0]);
         strcat(error," <IPaddress> | <Port> ");
-        perror(error);
+         perror(error);
         exit(1);
     }
 

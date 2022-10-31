@@ -35,8 +35,8 @@ int main (int argc, char **argv) {
 
     Listen( listenfd, (int) atoi(argv[2]) );  
 
-    // write_sock_info( listenfd, 1 );
-
+    // Signal( SIGCHLD, sig_chld );
+ 
     for ( ; ; ) {
         
         connfd = Accept( listenfd, (struct sockaddr *) NULL, NULL );
