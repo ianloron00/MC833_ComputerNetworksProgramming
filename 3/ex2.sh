@@ -29,32 +29,31 @@ run_once() {
   ip="127.0.0.1"
   echo "server port: $port"
   _server "$port" "$backlog" &
-  gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port'; $SHELL'";
-  # \ gnome-terminal --tab --title="mc833" window-with-profile="$terminalProfile" -- "_client '$ip' '$port'";
+  gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port''";
   netstat -taulpn | grep "$port"
 }
 
 solve() {
   port=$((5000 + $RANDOM))
-  backlog=0
   ip="127.0.0.1"
   for ((backlog=0; backlog<=0; backlog++));
   do
-    _server "$port" "$backlog" && \
+    _server "$port" "$backlog" &
     for ((n_clients=0; n_clients<1; n_clients++));
     do
-      _client "$ip" "$port" & \
+      gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port''" &
     done
-
-    netstat -taulpn | grep "$port"
-    port=port+1
+    # _client "$ip" "$port";
+    gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port''";
+    netstat -taulpn | grep "$port";
+    port=$(($port+1));
   done
 }
 
 ex2() {
   compile cliente servidor
-  # solve
-  run_once
+  solve
+  # run_once
 }
 
 ex2 "$@"

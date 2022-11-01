@@ -5,7 +5,7 @@
 * Generic Function to be executed after fork
 */
 void doit( int connfd ) { 
-    sleep( 30 );
+    sleep( 1 );
 }
 
 int main (int argc, char **argv) {
@@ -38,7 +38,7 @@ int main (int argc, char **argv) {
     // Signal( SIGCHLD, sig_chld );
  
     for ( ; ; ) {
-        
+        sleep( 2 );
         connfd = Accept( listenfd, (struct sockaddr *) NULL, NULL );
 
         if ( (pid = Fork() ) == 0 ) {
