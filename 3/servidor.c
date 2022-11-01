@@ -5,16 +5,7 @@
 * Generic Function to be executed after fork
 */
 void doit( int connfd ) { 
-    char* time_conn = get_time_connection();
-
-    //write_conn_info( "Connection started! " );
-   // write_conn_info( time_conn );
-
-   // write_peer_info( connfd, 1 );
-    sleep( 38 );
-
-   // write_conn_info( "Connection closed. " );
-   // write_conn_info( get_time_connection() );
+    sleep( 30 );
 }
 
 int main (int argc, char **argv) {
@@ -22,11 +13,11 @@ int main (int argc, char **argv) {
     struct sockaddr_in servaddr;
     pid_t pid;
     char   error[MAXLINE + 1];
-    printf("%d",argc);
-    if (argc !=3) {
+
+    if (argc != 3) {
         strcpy(error,"Definir: ");
         strcat(error,argv[0]);
-        strcat(error," <Port> ");
+        strcat(error," <Port> <BACKLOG>");
         perror(error);
         exit(1);
     }
@@ -42,12 +33,12 @@ int main (int argc, char **argv) {
         exit(1);
     }
 
-    Listen( listenfd, (int)atoi(argv[2]));  
+    Listen( listenfd, (int) atoi(argv[2]) );  
 
-    // write_sock_info( listenfd, 1 );
-
+    // Signal( SIGCHLD, sig_chld );
+ 
     for ( ; ; ) {
-        
+        sleep( 2 );
         connfd = Accept( listenfd, (struct sockaddr *) NULL, NULL );
 
         if ( (pid = Fork() ) == 0 ) {
