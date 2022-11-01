@@ -41,10 +41,10 @@ solve() {
     _server "$port" "$backlog" &
     for ((n_clients=0; n_clients<1; n_clients++));
     do
-      gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port''" &
+      gnome-terminal --tab --title="mc833" --command="bash -c 'echo 'cliente: <ip $ip> <porta $port>' ./cliente '$ip' '$port''" &
     done
     # _client "$ip" "$port";
-    gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port''";
+    gnome-terminal --tab --title="mc833" --command="bash -c 'echo 'cliente: <ip $ip> <porta $port>' ./cliente '$ip' '$port''";
     netstat -taulpn | grep "$port";
     port=$(($port+1));
   done
