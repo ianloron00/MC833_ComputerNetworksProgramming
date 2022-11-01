@@ -1,5 +1,6 @@
 #!/bin/bash
 
+terminalProfile="833"
 compile() {
     for arg in "$@";
     do
@@ -27,8 +28,10 @@ run_once() {
   backlog=0
   ip="127.0.0.1"
   echo "server port: $port"
-  _server "$port" "$backlog" & _client "$ip" "$port" &&
-  \ netstat -taulpn | grep "$port"
+  _server "$port" "$backlog" &
+  gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port'; $SHELL'";
+  # \ gnome-terminal --tab --title="mc833" window-with-profile="$terminalProfile" -- "_client '$ip' '$port'";
+  netstat -taulpn | grep "$port"
 }
 
 solve() {
