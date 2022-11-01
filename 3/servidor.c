@@ -5,7 +5,7 @@
 * Generic Function to be executed after fork
 */
 void doit( int connfd ) { 
-    sleep( 1 );
+    sleep( 30 );
 }
 
 int main (int argc, char **argv) {

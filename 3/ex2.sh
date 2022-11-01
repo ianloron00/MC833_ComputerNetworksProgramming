@@ -36,18 +36,26 @@ run_once() {
 solve() {
   port=$((5000 + $RANDOM))
   ip="127.0.0.1"
-  for ((backlog=0; backlog<=0; backlog++));
-  do
+  backlog=10
+  # for ((backlog=0; backlog<=1; backlog++));
+  # do
     _server "$port" "$backlog" &
-    for ((n_clients=0; n_clients<1; n_clients++));
-    do
-      gnome-terminal --tab --title="mc833" --command="bash -c 'echo 'cliente: <ip $ip> <porta $port>' ./cliente '$ip' '$port''" &
-    done
-    # _client "$ip" "$port";
-    gnome-terminal --tab --title="mc833" --command="bash -c 'echo 'cliente: <ip $ip> <porta $port>' ./cliente '$ip' '$port''";
+    gnome-terminal --tab --title="mc833" --command="bash -c '
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port' &
+    ./cliente '$ip' '$port'' ";
     netstat -taulpn | grep "$port";
+    # lsof -t -i:$port
+    kill -9 $(lsof -t -i:$port)
     port=$(($port+1));
-  done
+  # done
 }
 
 ex2() {
