@@ -23,20 +23,10 @@ h() {
   echo "./ex2.sh <PORT> <BACKLOG>"
 }
 
-run_once() {
-  port=$((5001 + $RANDOM % 5000))
-  backlog=0
-  ip="127.0.0.1"
-  echo "server port: $port"
-  _server "$port" "$backlog" &
-  gnome-terminal --tab --title="mc833" --command="bash -c './cliente '$ip' '$port''";
-  netstat -taulpn | grep "$port"
-}
-
-solve() {
+ex2() {
   port=$((5000 + $RANDOM))
   ip="127.0.0.1"
-  for ((backlog=0; backlog<=10; backlog++));
+  for ((backlog=0; backlog<=10; backlog+=2));
   do
     _server "$port" "$backlog" &
     gnome-terminal --tab --title="mc833" --command="bash -c '
@@ -56,10 +46,32 @@ solve() {
   done
 }
 
-ex2() {
-  compile cliente servidor
-  solve
-  # run_once
+ex4() {
+  port=$((5000 + $RANDOM))
+  ip="127.0.0.1"
+  backlog=0
+  _server "$port" "$backlog" &
+  gnome-terminal --tab --title="mc833" --command="bash -c '
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port' &
+  ./cliente '$ip' '$port'' ";
+  netstat -taulpn | grep "$port";
+  # kill -9 $(lsof -t -i:$port);
+  echo "status:"
+  # killall -9 cliente
+  ps aux | grep Z
 }
 
-ex2 "$@"
+main() {
+  compile cliente servidor
+  ex4
+}
+
+main "$@"
