@@ -7,7 +7,7 @@
 # > ./run.sh cliente servidor
 
 
-run() {
+compile() {
     for arg in "$@";
     do
         local file=$arg
@@ -15,4 +15,15 @@ run() {
     done
 }
 
-run "$@"
+client() {
+  ip="127.0.0.1"
+  ./cliente $ip $1 "<" "in.txt" ">" "out.txt"
+}
+
+server() {
+  # port=$((5000 + $RANDOM))
+  sudo ./servidor $1
+}
+
+compile cliente servidor
+"$@"

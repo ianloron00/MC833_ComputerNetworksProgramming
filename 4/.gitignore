@@ -4,3 +4,5 @@ out/*
 docs/*
 docs*
 .vscode
+serv_temp.c
+temp.c

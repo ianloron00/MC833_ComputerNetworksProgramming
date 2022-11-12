@@ -32,6 +32,23 @@ static char read_buf[MAXLINE];
 
 typedef void Sigfunc(int);
 
+/**
+ * Open a file
+ * NEEDS TO BE MODIFIED TO TREAT AS DESCRIPTOR
+*/
+FILE* Fopen(const char* fd, const char* purpose) {
+  // e.g: "input.txt", "r"
+  FILE* file = fopen(fd, purpose);   
+          
+  if (! file ) // equivalent to saying if ( file == NULL ) 
+  {  
+    printf("oops, file %s can't be read\n", fd); 
+    exit(1); 
+  }
+
+  return file;
+}
+
 void Shutdown( int sockfd, int howto ) {
   /* Returns: 0 if OK, –1 on error */
   if( (shutdown(sockfd, howto) ) == -1 ) {
@@ -40,7 +57,7 @@ void Shutdown( int sockfd, int howto ) {
   }
 } 
 
-void Select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict exceptfds, struct timeval *restrict timeout) 
+int Select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict exceptfds, struct timeval *restrict timeout) 
 {
   /* Returns: positive count of ready descriptors, 0 on timeout, –1 on error */
   int c = select(nfds, readfds, writefds, exceptfds, timeout);
@@ -52,6 +69,7 @@ void Select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_se
     perror("Select: error");
     exit(1);
   }
+  return c;
 }
 
 // lab. 3 --------------------
@@ -132,16 +150,16 @@ ssize_t Readline ( int fd, void *vptr, size_t maxlen ) {
 }
 
 
-// ssize_t Readtext ( int fd, void *vptr, size_t maxlen ) {
-//     ssize_t n = 0, m;
-//     char line[MAXLINE];
-//     while ( ( m = read( fd, line, sizeof(line) ) ) > 0 ) {
-//         n += m;
-//         strcat( vptr, line );
-//     }
+ssize_t Readtext ( int fd, void *vptr, size_t maxlen ) {
+    ssize_t n = 0, m;
+    char line[MAXLINE];
+    while ( ( m = read( fd, line, sizeof(line) ) ) > 0 ) {
+        n += m;
+        strcat( vptr, line );
+    }
 
-//     return n;
-// }
+    return n;
+}
 
 int Socket ( int family, int type, int flags ) {
     int sockfd;
