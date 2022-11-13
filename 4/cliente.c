@@ -1,6 +1,6 @@
 #include "./auxiliary.h"
 
-void send_input(int sockfd, const char* input_file, SA *servaddr)
+void send_input(int sockfd, const char *input_file, SA *servaddr)
 {
   // char msg[MAXLINE];
   char *line = NULL;
@@ -8,29 +8,43 @@ void send_input(int sockfd, const char* input_file, SA *servaddr)
   ssize_t read;
 
   FILE *input = Fopen(input_file, "r");
-  
-  while ((read = getline(&line, &len, input)) != -1) {
-      // printf("Retrieved line of length %zu :\n", read);
-      // printf("%s", line);
-      Write(sockfd, line, MAXLINE);
+
+  printf("-- Sending message line-by-line...\n");
+  while ((read = getline(&line, &len, input)) != -1)
+  {
+    printf("%s", line);
+    // Write(sockfd, line, MAXLINE);
+    Write(sockfd, line, MAXLINE);
   }
-  if (ferror(input)) {
-      /* handle error */
-      perror("sent_input"); exit(1);
+  if (ferror(input))
+  {
+    /* handle error */
+    perror("sent_input");
+    exit(1);
   }
+  printf("\n\n");
   free(line);
   fclose(input);
 }
 
-void save_server_msg(int sockfd, const char *output_file) {
+void save_server_msg(int sockfd, const char *output_file)
+{
+  printf("-- saving data...\n");
   char msg[MAXOUTPUT];
-  Readtext(sockfd, msg, strlen(msg) );
+  Readline(sockfd, msg, strlen(msg));
+  // Read(sockfd, msg, strlen(msg));
+  // Readtext(sockfd, msg, strlen(msg));
+  // read(sockfd, &msg, strlen(msg));
   save_info(output_file, msg);
+  printf("-- received from server:\n%s\n ", msg);
 }
 
 void doit(int sockfd, SA *servaddr, const char *input_file, const char *output_file)
 {
+  // receive hello
+  save_server_msg(sockfd, output_file);
   send_input(sockfd, input_file, servaddr);
+  // receive echo
   save_server_msg(sockfd, output_file);
 }
 
@@ -66,6 +80,8 @@ int main(int argc, char **argv)
     exit(1);
   }
 
+  print_client_info(sockfd);
+  print_peer_info(sockfd, 0);
   doit(sockfd, (SA *)&servaddr, argv[4], argv[6]);
 
   Close(sockfd);

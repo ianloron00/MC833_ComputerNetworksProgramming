@@ -1,19 +1,27 @@
 #include "./auxiliary.h"
 
-void send_hello( int connfd ) {
+void send_hello(int connfd)
+{
   char hello[MAXLINE] = "Hello from server to client in:\n";
   char *time_conn = get_time_connection();
   strcat(hello, (const char *)get_conn_info(connfd));
-  strcat( hello, "\n" );
-  strcat(hello, (const char*) time_conn );
-  Writen( connfd, hello, strlen(hello) );
+  strcat(hello, "\n");
+  strcat(hello, (const char *)time_conn);
+  strcat(hello, "\n");
+  // Writen( connfd, hello, strlen(hello) );
+  Writen(connfd, hello, strlen(hello));
+  printf("-- hello sent:\n%s\n", hello);
 }
 
-void echo_cli( int connfd ) {
+void echo_cli(int connfd)
+{
   char echo[MAXLINE];
-  Readtext( connfd, echo, strlen(echo) );
+  Readline(connfd, &echo, strlen(echo));
+  printf("-- received input: --\n%s\n", echo);
   sleep(1);
-  Writen( connfd, echo, strlen(echo) );
+  // Writen( connfd, echo, strlen(echo) );
+  Writen(connfd, echo, strlen(echo));
+  printf("-- message echoed. --");
 }
 
 /*
@@ -21,9 +29,10 @@ void echo_cli( int connfd ) {
  */
 void doit(int connfd)
 {
-  print_peer_info( connfd, 1 );
-  send_hello( connfd );
-  echo_cli( connfd );
+  print_peer_info(connfd, 1);
+  send_hello(connfd);
+  sleep(1);
+  echo_cli(connfd);
 }
 
 int main(int argc, char **argv)
@@ -55,6 +64,7 @@ int main(int argc, char **argv)
   }
 
   Listen(listenfd, LISTENQ);
+  print_server_info(listenfd);
 
   for (;;)
   {
