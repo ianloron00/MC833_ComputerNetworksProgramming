@@ -1,3 +1,5 @@
+// https://notes.shichao.io/unp/ch5/#tcp-echo-client-str_cli-function
+// https://notes.shichao.io/unp/ch6/
 #include "./auxiliary.h"
 
 void str_echo(int sockfd)
