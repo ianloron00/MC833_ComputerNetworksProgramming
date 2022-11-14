@@ -1,5 +1,20 @@
 #include "./auxiliary.h"
 
+void str_echo(int sockfd)
+{
+  ssize_t n;
+  char buf[MAXLINE];
+
+again:
+  while ((n = read(sockfd, buf, MAXLINE)) > 0)
+    Writen(sockfd, buf, n);
+
+  if (n < 0 && errno == EINTR)
+    goto again;
+  else if (n < 0)
+    err_quit("str_echo: read error");
+}
+
 void send_hello(int connfd)
 {
   char hello[MAXLINE] = "Hello from server to client in:\n";
@@ -39,7 +54,7 @@ int main(int argc, char **argv)
 {
   int listenfd, connfd;
   struct sockaddr_in servaddr;
-  pid_t pid;
+  pid_t childpid;
   char error[MAXLINE + 1];
 
   if (argc != 2)
@@ -68,14 +83,13 @@ int main(int argc, char **argv)
 
   for (;;)
   {
-    sleep(2);
     connfd = Accept(listenfd, (SA *)NULL, NULL);
 
-    if ((pid = Fork()) == 0)
+    if ((childpid = Fork()) == 0)
     {
       Close(listenfd);
-      doit(connfd);
-      Close(connfd);
+      // doit(connfd);
+      str_echo(connfd);
       exit(0);
     }
 

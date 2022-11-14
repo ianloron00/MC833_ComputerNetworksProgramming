@@ -15,6 +15,12 @@
 
 #endif
 
+void err_quit(const char *msg)
+{
+  perror(msg);
+  exit(1);
+}
+
 void save_info(const char *file_path, char *info)
 {
   FILE *file;
@@ -27,6 +33,32 @@ int max(int a, int b)
 {
   return a > b ? a : b;
 }
+
+char *Fgets(char *str, int n, FILE *stream)
+{
+  return fgets(str, n, stream);
+}
+
+int Fputs(const char *str, FILE *stream) {
+  return fputs(str, stream); 
+}
+
+// void str_cli(FILE *fp, int sockfd)
+// {
+//   char sendline[MAXLINE], recvline[MAXLINE];
+
+//   while (Fgets(sendline, MAXLINE, fp) != NULL)
+//   {
+
+//     Writen(sockfd, sendline, strlen(sendline));
+
+//     if (Readline(sockfd, recvline, MAXLINE) == 0)
+//       err_quit("str_cli: server terminated prematurely");
+
+//     Fputs(recvline, stdout);
+//   }
+// }
+
 
 void str_cli(FILE *fp, int sockfd)
 {
@@ -48,8 +80,7 @@ void str_cli(FILE *fp, int sockfd)
     /* socket is readable */
     if (FD_ISSET(sockfd, &rset))
     {
-      // if ( ( n = Read(sockfd, buf, MAXLINE)) == 0 ) {
-      if ((n = Readline(sockfd, buf, MAXLINE)) == 0)
+      if ( ( n = Read(sockfd, buf, MAXLINE)) == 0 )
       {
         if (stdineof == 1)
           return;
@@ -64,8 +95,7 @@ void str_cli(FILE *fp, int sockfd)
     /* input is readable */
     if (FD_ISSET(fileno(fp), &rset))
     {
-      // if ( (n = Read(fileno(fp), buf, MAXLINE)) == 0) {
-      if ((n = Readline(fileno(fp), buf, MAXLINE)) == 0)
+      if ( (n = Read(fileno(fp), buf, MAXLINE)) == 0)
       {
         stdineof = 1;
         Shutdown(sockfd, SHUT_WR);

@@ -19,6 +19,7 @@
 #include <sys/select.h>
 #include <signal.h>
 #include <time.h>
+#include <limits.h>
 
 #define MAXLINE 4096
 #define MAXOUTPUT 16384
@@ -31,6 +32,15 @@ static char *read_ptr;
 static char read_buf[MAXLINE];
 
 typedef void Sigfunc(int);
+
+
+void Inet_pton(int inet, const char* ip, void* sin_addr) {
+  if (inet_pton(inet, ip, sin_addr) <= 0)
+  {
+    perror("inet_pton error (client)");
+    exit(1);
+  }
+}
 
 /**
  * Open a file
@@ -79,39 +89,39 @@ int Select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set
 
 // lab. 3 --------------------
 
-Sigfunc *signal(int signo, Sigfunc *func)
-{
-  struct sigaction act, oact;
+// Sigfunc *signal(int signo, Sigfunc *func)
+// {
+//   struct sigaction act, oact;
 
-  act.sa_handler = func;
-  sigemptyset(&act.sa_mask);
-  act.sa_flags = 0;
-  if (signo == SIGALRM)
-  {
-#ifdef SA_INTERRUPT
-    act.sa_flags |= SA_INTERRUPT;
-#endif
-  }
-  else
-  {
-#ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
-#endif
-  }
-  if (sigaction(signo, &act, &oact) < 0)
-    return (SIG_ERR);
+//   act.sa_handler = func;
+//   sigemptyset(&act.sa_mask);
+//   act.sa_flags = 0;
+//   if (signo == SIGALRM)
+//   {
+// #ifdef SA_INTERRUPT
+//     act.sa_flags |= SA_INTERRUPT;
+// #endif
+//   }
+//   else
+//   {
+// #ifdef SA_RESTART
+//     act.sa_flags |= SA_RESTART;
+// #endif
+//   }
+//   if (sigaction(signo, &act, &oact) < 0)
+//     return (SIG_ERR);
 
-  return (oact.sa_handler);
-}
+//   return (oact.sa_handler);
+// }
 
-void Signal(int signo, Sigfunc *func)
-{
-  if (signal(signo, func) < 0)
-  {
-    perror("Signal");
-    exit(1);
-  }
-}
+// void Signal(int signo, Sigfunc *func)
+// {
+//   if (signal(signo, func) < 0)
+//   {
+//     perror("Signal");
+//     exit(1);
+//   }
+// }
 
 // lab.2 --------------
 static ssize_t my_read(int fd, char *ptr)
@@ -177,7 +187,6 @@ ssize_t Read(int fd, void *vptr, size_t maxlen)
     perror("Read");
     exit(1);
   }
-  printf("n: %ld, lin: %s\n", n, (const char *)vptr);
   return n;
 }
 

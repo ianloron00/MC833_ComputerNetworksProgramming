@@ -2,7 +2,6 @@
 
 void send_input(int sockfd, const char *input_file, SA *servaddr)
 {
-  // char msg[MAXLINE];
   char *line = NULL;
   size_t len = 0;
   ssize_t read;
@@ -13,7 +12,6 @@ void send_input(int sockfd, const char *input_file, SA *servaddr)
   while ((read = getline(&line, &len, input)) != -1)
   {
     printf("%s", line);
-    // Write(sockfd, line, MAXLINE);
     Write(sockfd, line, MAXLINE);
   }
   if (ferror(input))
@@ -32,9 +30,7 @@ void save_server_msg(int sockfd, const char *output_file)
   printf("-- saving data...\n");
   char msg[MAXOUTPUT];
   Readline(sockfd, msg, strlen(msg));
-  // Read(sockfd, msg, strlen(msg));
   // Readtext(sockfd, msg, strlen(msg));
-  // read(sockfd, &msg, strlen(msg));
   save_info(output_file, msg);
   printf("-- received from server:\n%s\n ", msg);
 }
@@ -43,14 +39,17 @@ void doit(int sockfd, SA *servaddr, const char *input_file, const char *output_f
 {
   // receive hello
   save_server_msg(sockfd, output_file);
-  send_input(sockfd, input_file, servaddr);
+  FILE *input = Fopen(input_file, "r");
+  str_cli(input, sockfd);
+
+  // send_input(sockfd, input_file, servaddr);
   // receive echo
-  save_server_msg(sockfd, output_file);
+  // save_server_msg(sockfd, output_file);
 }
 
 int main(int argc, char **argv)
 {
-  int sockfd;
+  int sockfd1;
   char error[MAXLINE + 1];
   struct sockaddr_in servaddr;
 
@@ -63,28 +62,26 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  sockfd = Socket(AF_INET, SOCK_STREAM, 0);
+  sockfd1 = Socket(AF_INET, SOCK_STREAM, 0);
 
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
-  if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0)
-  {
-    perror("inet_pton error (client)");
-    exit(1);
-  }
+
+  Inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
   servaddr.sin_port = htons((unsigned short int)atoi(argv[2]));
 
-  if (connect(sockfd, (SA *)&servaddr, sizeof(servaddr)) < 0)
+  if (connect(sockfd1, (SA *)&servaddr, sizeof(servaddr)) < 0)
   {
     perror("connect error");
     exit(1);
   }
 
-  print_client_info(sockfd);
-  print_peer_info(sockfd, 0);
-  doit(sockfd, (SA *)&servaddr, argv[4], argv[6]);
+  print_client_info(sockfd1);
+  print_peer_info(sockfd1, 0);
+  str_cli(stdin, sockfd1);
+  // doit(sockfd1, (SA *)&servaddr, argv[4], argv[6]);
 
-  Close(sockfd);
+  // Close(sockfd1);
 
   exit(0);
 }
