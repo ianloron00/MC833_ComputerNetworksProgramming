@@ -65,7 +65,9 @@ void Shutdown(int sockfd, int howto)
   /* Returns: 0 if OK, –1 on error */
   if ((shutdown(sockfd, howto)) == -1)
   {
-    perror("Shutdown");
+    char erro[50];
+    sprintf(erro, "%s %d ", "Shutdown from socket:", sockfd);
+    perror(erro);
     exit(1);
   }
 }
