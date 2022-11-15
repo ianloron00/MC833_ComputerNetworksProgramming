@@ -17,7 +17,7 @@ compile() {
 
 client() {
   ip="127.0.0.1"
-  ./cliente $ip $1 "<" "in.txt" ">" "out.txt"
+  ./cliente $ip $1 $2 "<" "in.txt" ">" "out.txt"
 }
 
 server() {

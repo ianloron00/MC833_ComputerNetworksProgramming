@@ -1,6 +1,6 @@
 Hello from server to client in:
-IP address: 127.0.0.1; Port number: 54321
-Time: Tue Nov 15 10:58:40 2022
+IP address: 127.0.0.1; Port number: 12345
+Time: Tue Nov 15 11:20:18 2022
 ﻿-------------------------------
 Teste entrada stdin do cliente
 MC833

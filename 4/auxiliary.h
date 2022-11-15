@@ -28,7 +28,8 @@ void save_info(FILE *fd, char *info)
   fclose(fd);
 }
 
-void str_cli(const char* input_file, const char* output_file, int sockfd1)
+void str_cli(const char* input_file, const char* output_file, 
+            int sockfd1, int sockfd2)
 {
   int maxfdp1;
   fd_set rset;
@@ -40,14 +41,13 @@ void str_cli(const char* input_file, const char* output_file, int sockfd1)
   FD_ZERO(&rset);
   for (;;)
   {
+    memset(buf, 0, strlen(buf));
     FD_SET(fileno(input), &rset);
     FD_SET(sockfd1, &rset);
-    maxfdp1 = max(fileno(input), sockfd1) + 1;
+    maxfdp1 = max(max(sockfd1, sockfd2), fileno(input)) + 1;
     Select(maxfdp1, &rset, NULL, NULL, NULL);
-    memset(buf, 0, strlen(buf));
 
-
-    /* socket is readable */
+    /* socket 1 is readable */
     if (FD_ISSET(sockfd1, &rset))
     {
       if ( ( n = Read(sockfd1, buf, MAXLINE)) == 0 )
@@ -62,7 +62,28 @@ void str_cli(const char* input_file, const char* output_file, int sockfd1)
       }
       save_info(Fopen(output_file, "a"), buf);
       Write(fileno(stdout), buf, n);
-      memset(buf, 0, strlen(buf));
+      Shutdown(sockfd2, SHUT_WR);
+      FD_CLR(sockfd2, &rset);
+
+    }
+
+    /* socket 1 is readable */
+    if (FD_ISSET(sockfd1, &rset))
+    {
+      if ( ( n = Read(sockfd1, buf, MAXLINE)) == 0 )
+      {
+        if (stdineof == 1)
+          return;
+        else
+        {
+          perror("str_cli: server terminated prematurely");
+          exit(1);
+        }
+      }
+      save_info(Fopen(output_file, "a"), buf);
+      Write(fileno(stdout), buf, n);
+      Shutdown(sockfd2, SHUT_WR);
+      FD_CLR(sockfd2, &rset);
     }
 
     /* input is readable */
@@ -72,10 +93,12 @@ void str_cli(const char* input_file, const char* output_file, int sockfd1)
       {
         stdineof = 1;
         Shutdown(sockfd1, SHUT_WR);
+        Shutdown(sockfd2, SHUT_WR);
         FD_CLR(fileno(input), &rset);
         continue;
       }
       Writen(sockfd1, buf, n);
+      Writen(sockfd2, buf, n);
       hasSentInput = 1;
     }
   }

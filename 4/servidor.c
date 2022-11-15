@@ -78,7 +78,6 @@ int main(int argc, char **argv)
     {
       Close(listenfd);
       doit(connfd);
-      // str_echo(connfd);
       exit(0);
     }
 
