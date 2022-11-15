@@ -31,7 +31,6 @@ void save_info(FILE *fd, char *info)
 void str_cli(const char *input_file, const char *output_file,
              int sockfd1, int sockfd2)
 {
-  printf("socket 1: %d; socket 2: %d\n", sockfd1, sockfd2);
   int maxfdp1;
   fd_set rset;
   char buf[MAXLINE];
@@ -48,12 +47,6 @@ void str_cli(const char *input_file, const char *output_file,
     maxfdp1 = max(max(sockfd1, sockfd2), fileno(input)) + 1;
     Select(maxfdp1, &rset, NULL, NULL, NULL);
 
-    if (s1Finished && s2Finished) {
-      Close(sockfd1);
-      Close(sockfd2);
-      return;
-    }
-
     /* socket 1 is readable */
     if (FD_ISSET(sockfd1, &rset) && !s1Finished)
     {
@@ -62,8 +55,6 @@ void str_cli(const char *input_file, const char *output_file,
         if (hasSentInput)
         {
           s1Finished = 1;
-          printf("shutdown 1 read\n");
-          Shutdown(sockfd1, SHUT_RD);
           FD_CLR(sockfd1, &rset);
           continue;
         }
@@ -82,8 +73,6 @@ void str_cli(const char *input_file, const char *output_file,
         if (hasSentInput)
         {
           s2Finished = 1;
-          printf("shutdown 2 read\n");
-          Shutdown(sockfd2, SHUT_RD);
           FD_CLR(sockfd2, &rset);
           continue;
         }
@@ -108,6 +97,12 @@ void str_cli(const char *input_file, const char *output_file,
       }
       Writen(sockfd1, buf, n);
       Writen(sockfd2, buf, n);
+    }
+
+    if (s1Finished && s2Finished) {
+      Close(sockfd1);
+      Close(sockfd2);
+      return;
     }
   }
 }
