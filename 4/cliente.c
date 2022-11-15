@@ -1,50 +1,12 @@
 #include "./auxiliary.h"
 
-void send_input(int sockfd, const char *input_file, SA *servaddr)
-{
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t read;
-
-  FILE *input = Fopen(input_file, "r");
-
-  printf("-- Sending message line-by-line...\n");
-  while ((read = getline(&line, &len, input)) != -1)
-  {
-    printf("%s", line);
-    Write(sockfd, line, MAXLINE);
-  }
-  if (ferror(input))
-  {
-    /* handle error */
-    perror("sent_input");
-    exit(1);
-  }
-  printf("\n\n");
-  free(line);
-  fclose(input);
-}
-
-void save_server_msg(int sockfd, const char *output_file)
-{
-  printf("-- saving data...\n");
-  char msg[MAXOUTPUT];
-  Readline(sockfd, msg, strlen(msg));
-  // Readtext(sockfd, msg, strlen(msg));
-  save_info(output_file, msg);
-  printf("-- received from server:\n%s\n ", msg);
-}
-
-void doit(int sockfd, SA *servaddr, const char *input_file, const char *output_file)
+void doit(int sockfd1, SA *servaddr, const char *input_file, const char *output_file)
 {
   // receive hello
-  save_server_msg(sockfd, output_file);
   FILE *input = Fopen(input_file, "r");
-  str_cli(input, sockfd);
-
-  // send_input(sockfd, input_file, servaddr);
-  // receive echo
-  // save_server_msg(sockfd, output_file);
+  FILE *output = Fopen(output_file, "w");
+  // send_input(sockfd1, input, servaddr);
+  str_cli(input, output, sockfd1);
 }
 
 int main(int argc, char **argv)
@@ -78,10 +40,7 @@ int main(int argc, char **argv)
 
   print_client_info(sockfd1);
   print_peer_info(sockfd1, 0);
-  str_cli(stdin, sockfd1);
-  // doit(sockfd1, (SA *)&servaddr, argv[4], argv[6]);
-
-  // Close(sockfd1);
+  doit(sockfd1, (SA *)&servaddr, argv[4], argv[6]);
 
   exit(0);
 }

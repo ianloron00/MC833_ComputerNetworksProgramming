@@ -49,7 +49,7 @@ void doit(int connfd)
   print_peer_info(connfd, 1);
   send_hello(connfd);
   sleep(1);
-  echo_cli(connfd);
+  str_echo(connfd);
 }
 
 int main(int argc, char **argv)
@@ -90,8 +90,8 @@ int main(int argc, char **argv)
     if ((childpid = Fork()) == 0)
     {
       Close(listenfd);
-      // doit(connfd);
-      str_echo(connfd);
+      doit(connfd);
+      // str_echo(connfd);
       exit(0);
     }
 

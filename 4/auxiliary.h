@@ -59,28 +59,45 @@ int Fputs(const char *str, FILE *stream) {
 //   }
 // }
 
+ssize_t send_input(FILE *input, int sockfd) {
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
 
-void str_cli(FILE *fp, int sockfd)
+  while ((read = getline(&line, &len, input)) != -1)
+  {
+    Write(sockfd, line, MAXLINE);
+  }
+  if (ferror(input))
+    err_quit("sent_input");
+
+  free(line);
+  fclose(input);
+  printf("end sending\n");
+  return read;
+}
+
+void str_cli(FILE *input, FILE *output, int sockfd1)
 {
-  int maxfdp1, stdineof;
+  int maxfdp1;
   fd_set rset;
   char buf[MAXLINE];
-  int n;
+  int n, hasSentInput = 0;
 
-  stdineof = 0;
+  int stdineof = 0;
   FD_ZERO(&rset);
   for (;;)
   {
-    if (stdineof == 0)
-      FD_SET(fileno(fp), &rset);
-    FD_SET(sockfd, &rset);
-    maxfdp1 = max(fileno(fp), sockfd) + 1;
+    FD_SET(fileno(input), &rset);
+    FD_SET(sockfd1, &rset);
+    maxfdp1 = max(fileno(input), sockfd1) + 1;
     Select(maxfdp1, &rset, NULL, NULL, NULL);
 
+
     /* socket is readable */
-    if (FD_ISSET(sockfd, &rset))
+    if (FD_ISSET(sockfd1, &rset))
     {
-      if ( ( n = Read(sockfd, buf, MAXLINE)) == 0 )
+      if ( ( n = Read(sockfd1, buf, MAXLINE)) == 0 )
       {
         if (stdineof == 1)
           return;
@@ -92,17 +109,19 @@ void str_cli(FILE *fp, int sockfd)
       }
       Write(fileno(stdout), buf, n);
     }
+
     /* input is readable */
-    if (FD_ISSET(fileno(fp), &rset))
+    if (!hasSentInput && FD_ISSET(fileno(input), &rset))
     {
-      if ( (n = Read(fileno(fp), buf, MAXLINE)) == 0)
+      if ( (n = Read(fileno(input), buf, MAXLINE)) == 0)
       {
         stdineof = 1;
-        Shutdown(sockfd, SHUT_WR);
-        FD_CLR(fileno(fp), &rset);
+        Shutdown(sockfd1, SHUT_WR);
+        FD_CLR(fileno(input), &rset);
         continue;
       }
-      Writen(sockfd, buf, n);
+      Writen(sockfd1, buf, n);
+      hasSentInput = 1;
     }
   }
 }
