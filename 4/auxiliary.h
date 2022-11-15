@@ -9,6 +9,7 @@
 
 #define LISTENQ 10
 #define MAXDATASIZE 100
+#define max(x, y) ((x > y) ? (x) : (y))
 
 // change it to your path
 #define OUTPUT_CONN_PATH "~/connection_info.txt"
@@ -21,68 +22,19 @@ void err_quit(const char *msg)
   exit(1);
 }
 
-void save_info(const char *file_path, char *info)
+void save_info(FILE *fd, char *info)
 {
-  FILE *file;
-  file = fopen(file_path, "a");
-  fprintf(file, "%s\n", info);
-  fclose(file);
+  fprintf(fd, "%s\n", info);
+  fclose(fd);
 }
 
-int max(int a, int b)
-{
-  return a > b ? a : b;
-}
-
-char *Fgets(char *str, int n, FILE *stream)
-{
-  return fgets(str, n, stream);
-}
-
-int Fputs(const char *str, FILE *stream) {
-  return fputs(str, stream); 
-}
-
-// void str_cli(FILE *fp, int sockfd)
-// {
-//   char sendline[MAXLINE], recvline[MAXLINE];
-
-//   while (Fgets(sendline, MAXLINE, fp) != NULL)
-//   {
-
-//     Writen(sockfd, sendline, strlen(sendline));
-
-//     if (Readline(sockfd, recvline, MAXLINE) == 0)
-//       err_quit("str_cli: server terminated prematurely");
-
-//     Fputs(recvline, stdout);
-//   }
-// }
-
-ssize_t send_input(FILE *input, int sockfd) {
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t read;
-
-  while ((read = getline(&line, &len, input)) != -1)
-  {
-    Write(sockfd, line, MAXLINE);
-  }
-  if (ferror(input))
-    err_quit("sent_input");
-
-  free(line);
-  fclose(input);
-  printf("end sending\n");
-  return read;
-}
-
-void str_cli(FILE *input, FILE *output, int sockfd1)
+void str_cli(const char* input_file, const char* output_file, int sockfd1)
 {
   int maxfdp1;
   fd_set rset;
   char buf[MAXLINE];
   int n, hasSentInput = 0;
+  FILE* input = Fopen(input_file, "r");
 
   int stdineof = 0;
   FD_ZERO(&rset);
@@ -92,6 +44,7 @@ void str_cli(FILE *input, FILE *output, int sockfd1)
     FD_SET(sockfd1, &rset);
     maxfdp1 = max(fileno(input), sockfd1) + 1;
     Select(maxfdp1, &rset, NULL, NULL, NULL);
+    memset(buf, 0, strlen(buf));
 
 
     /* socket is readable */
@@ -107,7 +60,9 @@ void str_cli(FILE *input, FILE *output, int sockfd1)
           exit(1);
         }
       }
+      save_info(Fopen(output_file, "a"), buf);
       Write(fileno(stdout), buf, n);
+      memset(buf, 0, strlen(buf));
     }
 
     /* input is readable */
@@ -124,6 +79,15 @@ void str_cli(FILE *input, FILE *output, int sockfd1)
       hasSentInput = 1;
     }
   }
+}
+
+char *Fgets(char *str, int n, FILE *stream)
+{
+  return fgets(str, n, stream);
+}
+
+int Fputs(const char *str, FILE *stream) {
+  return fputs(str, stream); 
 }
 
 // lab. 3
@@ -259,10 +223,7 @@ void save_conn_info(char *info)
 {
   FILE *file;
   file = fopen(OUTPUT_CONN_PATH, "a");
-
-  fprintf(file, "%s\n", info);
-
-  fclose(file);
+  save_info(file, info);
 }
 
 void save_sock_info(int sockfd, int isServer)

@@ -2,11 +2,7 @@
 
 void doit(int sockfd1, SA *servaddr, const char *input_file, const char *output_file)
 {
-  // receive hello
-  FILE *input = Fopen(input_file, "r");
-  FILE *output = Fopen(output_file, "w");
-  // send_input(sockfd1, input, servaddr);
-  str_cli(input, output, sockfd1);
+  str_cli(input_file, output_file, sockfd1);
 }
 
 int main(int argc, char **argv)

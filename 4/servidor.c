@@ -19,26 +19,14 @@ again:
 
 void send_hello(int connfd)
 {
-  char hello[MAXLINE] = "Hello from server to client in:\n";
-  char *time_conn = get_time_connection();
-  strcat(hello, (const char *)get_conn_info(connfd));
-  strcat(hello, "\n");
-  strcat(hello, (const char *)time_conn);
-  strcat(hello, "\n");
-  // Writen( connfd, hello, strlen(hello) );
+  char hello[MAXLINE];
+  sprintf(hello, "%s\n%s\n%s",
+    "Hello from server to client in:",
+    (const char*) get_conn_info(connfd),
+    (const char*) get_time_connection()
+  );
   Writen(connfd, hello, strlen(hello));
   printf("-- hello sent:\n%s\n", hello);
-}
-
-void echo_cli(int connfd)
-{
-  char echo[MAXLINE];
-  Readline(connfd, &echo, strlen(echo));
-  printf("-- received input: --\n%s\n", echo);
-  sleep(1);
-  // Writen( connfd, echo, strlen(echo) );
-  Writen(connfd, echo, strlen(echo));
-  printf("-- message echoed. --");
 }
 
 /*
@@ -48,7 +36,6 @@ void doit(int connfd)
 {
   print_peer_info(connfd, 1);
   send_hello(connfd);
-  sleep(1);
   str_echo(connfd);
 }
 
