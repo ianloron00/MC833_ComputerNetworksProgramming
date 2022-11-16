@@ -89,7 +89,6 @@ void str_cli(const char *input_file, const char *output_file,
       if ((n = Read(fileno(input), buf, MAXLINE)) == 0)
       {
         hasSentInput = 1;
-        printf("shutdown write\n");
         Shutdown(sockfd1, SHUT_WR);
         Shutdown(sockfd2, SHUT_WR);
         FD_CLR(fileno(input), &rset);

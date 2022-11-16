@@ -26,7 +26,6 @@ void send_hello(int connfd)
     (const char*) get_time_connection()
   );
   Writen(connfd, hello, strlen(hello));
-  printf("-- hello sent:\n%s\n", hello);
 }
 
 /*
