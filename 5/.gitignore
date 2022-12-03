@@ -1,0 +1,10 @@
+cliente
+servidor
+out/*
+docs/*
+docs*
+.vscode
+serv_temp.c
+temp.c
+183266*
+__*
