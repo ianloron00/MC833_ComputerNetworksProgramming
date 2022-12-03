@@ -3,6 +3,7 @@
 
 #include "./wrappers.h"
 #define SA struct sockaddr
+#define SAI struct sockaddr_in
 
 #define MAXLINE 4096
 #define MAXOUTPUT 16384
@@ -16,10 +17,19 @@
 
 #endif
 
-void err_quit(const char *msg)
+void str_echo(int sockfd)
 {
-  perror(msg);
-  exit(1);
+  ssize_t n;
+  char buf[MAXLINE];
+
+again:
+  while ((n = read(sockfd, buf, MAXLINE)) > 0)
+    Writen(sockfd, buf, n);
+
+  if (n < 0 && errno == EINTR)
+    goto again;
+  else if (n < 0)
+    err_quit("str_echo: read error");
 }
 
 void save_info(FILE *fd, char *info)

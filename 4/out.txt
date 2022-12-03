@@ -1,69 +1,20 @@
-
-
-
-
-
 Hello from server to client in:
 IP address: 127.0.0.1; Port number: 54321
-Time: Sat Nov 12 12:26:29 2022
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Time: Tue Nov 15 20:47:56 2022
+﻿-------------------------------
+Teste entrada stdin do cliente
+MC833
+Turma 2s 2022
+Exercicio 5
+-------------------------------
 
 Hello from server to client in:
 IP address: 127.0.0.1; Port number: 12345
-Time: Sun Nov 13 07:10:22 2022
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Hello from server to client in:
-IP address: 127.0.0.1; Port number: 12345
-Time: Sun Nov 13 07:34:24 2022
-Hello from server to client in:
-IP address: 127.0.0.1; Port number: 12345
-Time: Sun Nov 13 07:45:13 2022
-Hello from server to client in:
-IP address: 127.0.0.1; Port number: 54321
-Time: Sun Nov 13 07:46:57 2022
-
-
+Time: Tue Nov 15 20:47:56 2022
+﻿-------------------------------
+Teste entrada stdin do cliente
+MC833
+Turma 2s 2022
+Exercicio 5
+-------------------------------
 

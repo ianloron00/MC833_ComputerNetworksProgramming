@@ -33,8 +33,38 @@ static char read_buf[MAXLINE];
 
 typedef void Sigfunc(int);
 
+void err_quit(const char *msg)
+{
+  perror(msg);
+  exit(1);
+}
 
-void Inet_pton(int inet, const char* ip, void* sin_addr) {
+// pt. 5
+
+void Sendto(int fd, const void *buf, size_t n, int flags,
+            const struct sockaddr *addr, socklen_t addr_len)
+{
+
+  if (sendto(fd, buf, n, flags, addr, addr_len) < 0)
+  {
+    err_quit("Sendto");
+  }
+}
+
+int Recvfrom(int fd, void *buf, size_t n, int flags, struct sockaddr *addr, socklen_t *addr_len)
+{
+  int m;
+  if ((m = recvfrom(fd, buf, n, flags, addr, addr_len)) < 0)
+  {
+    err_quit("Recvfrom");
+  }
+
+  return m;
+}
+// pt. 4
+
+void Inet_pton(int inet, const char *ip, void *sin_addr)
+{
   if (inet_pton(inet, ip, sin_addr) <= 0)
   {
     perror("inet_pton error (client)");

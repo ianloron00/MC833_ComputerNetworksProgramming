@@ -6,6 +6,8 @@
 # Then, run the code:
 # > ./run.sh cliente servidor
 
+cliente="cliente"
+servidor="servidor"
 
 compile() {
     for arg in "$@";
@@ -17,13 +19,13 @@ compile() {
 
 client() {
   ip="127.0.0.1"
-  ./cliente $ip $1 $2 "<" "in.txt" ">" "out.txt"
+  ./$cliente $ip $1
 }
 
 server() {
   # port=$((5000 + $RANDOM))
-  sudo ./servidor $1
+  sudo ./$servidor $1
 }
 
-compile cliente servidor
+compile $cliente $servidor
 "$@"
