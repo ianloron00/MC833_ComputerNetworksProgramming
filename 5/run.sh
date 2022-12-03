@@ -6,8 +6,8 @@
 # Then, run the code:
 # > ./run.sh cliente servidor
 
-cliente="__client"
-servidor="__server"
+cliente="cliente"
+servidor="servidor"
 
 compile() {
     for arg in "$@";

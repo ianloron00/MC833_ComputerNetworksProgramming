@@ -2,31 +2,6 @@
 // https://notes.shichao.io/unp/ch6/
 #include "./auxiliary.h"
 
-void str_echo(int sockfd)
-{
-  ssize_t n;
-  char buf[MAXLINE];
-
-again:
-  while ((n = read(sockfd, buf, MAXLINE)) > 0)
-    Writen(sockfd, buf, n);
-
-  if (n < 0 && errno == EINTR)
-    goto again;
-  else if (n < 0)
-    err_quit("str_echo: read error");
-}
-
-void send_hello(int connfd)
-{
-  char hello[MAXLINE];
-  sprintf(hello, "%s\n%s\n%s",
-    "Hello from server to client in:",
-    (const char*) get_conn_info(connfd),
-    (const char*) get_time_connection()
-  );
-  Writen(connfd, hello, strlen(hello));
-}
 
 /*
  * Generic Function to be executed after fork
@@ -34,7 +9,6 @@ void send_hello(int connfd)
 void doit(int connfd)
 {
   print_peer_info(connfd, 1);
-  send_hello(connfd);
   str_echo(connfd);
 }
 
