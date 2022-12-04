@@ -25,6 +25,9 @@
 #define MAXOUTPUT 16384
 #define _XOPEN_SOURCE 700
 
+#define SA struct sockaddr
+#define SAI struct sockaddr_in
+
 #endif
 
 static int read_cnt;
@@ -40,6 +43,11 @@ void err_quit(const char *msg)
 }
 
 // pt. 5
+
+void Getpeername(int sockfd, SA* peeraddr, socklen_t *buflen) {
+  if (getpeername(sockfd, (SA*)peeraddr, buflen) == -1)
+    err_quit("getpeername");
+}
 
 void Sendto(int fd, const void *buf, size_t n, int flags,
             const struct sockaddr *addr, socklen_t addr_len)

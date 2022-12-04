@@ -49,7 +49,7 @@ void doit(int sockfd, SA *servaddr)
 
 int main(int argc, char **argv)
 {
-  int i, sockfd[5];
+  int sockfd;
   SAI servaddr;
 
   if (argc != 3)
@@ -63,23 +63,18 @@ int main(int argc, char **argv)
   }
   const char *ip = argv[1], *port = argv[2];
 
-  for (i = 0; i < 5; i++)
-  {
-    sockfd[i] = Socket(AF_INET, SOCK_STREAM, 0);
-    bzero(&servaddr, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    Inet_pton(AF_INET, ip, &servaddr.sin_addr);
-    servaddr.sin_port = htons((unsigned short int)atoi(port));
-    if (connect(sockfd[i], (SA *)&servaddr, sizeof(servaddr)) < 0)
-    {
-      perror("connect error");
-      exit(1);
-    }
-    print_client_info(sockfd[i]);
-    print_peer_info(sockfd[i], 0);
-  }
+  sockfd = Socket(AF_INET, SOCK_STREAM, 0);
+  bzero(&servaddr, sizeof(servaddr));
+  servaddr.sin_family = AF_INET;
+  Inet_pton(AF_INET, ip, &servaddr.sin_addr);
+  servaddr.sin_port = htons((unsigned short int)atoi(port));
+  if (connect(sockfd, (SA *)&servaddr, sizeof(servaddr)) < 0)
+    err_quit("connect error");
+
+  print_client_info(sockfd);
+  print_peer_info(sockfd, 0);
   // __str_cli(stdin, sockfd[0]);
-  doit(sockfd[0], (SA *)&servaddr);
+  doit(sockfd, (SA *)&servaddr);
 
   exit(0);
 }

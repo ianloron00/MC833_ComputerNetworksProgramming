@@ -2,8 +2,6 @@
 #define WRAPPER
 
 #include "./wrappers.h"
-#define SA struct sockaddr
-#define SAI struct sockaddr_in
 
 #define MAXLINE 4096
 #define MAXOUTPUT 16384
@@ -17,7 +15,7 @@
 
 #endif
 
-void str_echo(int sockfd)
+void  str_echo(int sockfd)
 {
   ssize_t n;
   char buf[MAXLINE];
@@ -126,6 +124,82 @@ int Fputs(const char *str, FILE *stream)
   return fputs(str, stream);
 }
 
+// void __book_random_func() {
+  // int i, maxi, maxfd, listenfd, connfd, sockfd;
+  // int nready, client[FD_SETSIZE];
+  // ssize_t n;
+  // fd_set rset, allset;
+  // char buf[MAXLINE];
+  // socklen_t clilen;
+  // SAI cliaddr, servaddr;
+
+//   maxfd = listenfd;
+//   maxi = -1;
+//   for (i = 0; i < FD_SETSIZE; i++)
+//     client[i] = -1;
+
+//   FD_ZERO(&allset);
+//   FD_SET(listenfd, &allset);
+
+//   for (;;)
+//   {
+//     rset = allset;
+//     nready = Select(maxfd + 1, &rset, NULL, NULL, NULL);
+
+//     /* new client connection */
+//     if (FD_ISSET(listenfd, &rset))
+//     {
+//       clilen = sizeof(cliaddr);
+//       connfd = Accept(listenfd, (SA *)&cliaddr, &clilen);
+
+//       for (i = 0; i < FD_SETSIZE; i++)
+//       {
+//         if (client[i] < 0)
+//         {
+//           client[i] = connfd; /* save descriptor */
+//           break;
+//         }
+//       }
+//       if (i == FD_SETSIZE)
+//         err_quit("too many clients");
+//       /* add new descriptor to the set */
+//       FD_SET(connfd, &allset);
+//       if (connfd > maxfd)
+//         maxfd = connfd;
+//       /* for select */
+//       if (i > maxi)
+//         maxi = i;
+//       /* no more readable descriptors */
+//       if (--nready <= 0)
+//         continue;
+
+//       /* check all clients for data */
+//       for (i = 0; i <= maxi; i++)
+//       {
+//         if ((sockfd = client[i]) < 0)
+//           continue;
+
+//         if (FD_ISSET(sockfd, &rset))
+//         {
+//           if ((n = Read(sockfd, buf, MAXLINE)) == 0)
+//           {
+//             /* connection closed by client */
+//             Close(sockfd);
+//             FD_CLR(sockfd, &allset);
+//             client[i] = -1;
+//           }
+//           else
+//             Writen(sockfd, buf, n);
+
+//           /* no more readable descriptors */
+//           if (--nready <= 0)
+//             break;
+//         }
+//       }
+//     }
+//   }
+// }
+
 // lab. 3
 /*
  * Calls waitpid to prevent zombies
@@ -167,6 +241,12 @@ char *get_conn_info(int sockfd)
   return ans;
 }
 
+int get_port_number(int sockfd) {
+  SAI peeraddr;
+  socklen_t buflen = sizeof(peeraddr);
+  Getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen);
+  return htons(peeraddr.sin_port);
+}
 /*
  * Print connected peer socket's IP address and port number.
  */
@@ -179,20 +259,18 @@ char *get_peer_info(int sockfd, int isServer)
   char *ans = malloc(sizeof(char) * len);
 
   socklen_t buflen = sizeof(peeraddr);
-  if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen) == -1)
-  {
-    perror("getpeername");
-    exit(1);
-  }
-  else
-  {
+  // if (getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen) == -1)
+  //   err_quit("getpeername");
+  Getpeername(sockfd, (struct sockaddr *)&peeraddr, &buflen);
+  
+  // {
     snprintf(ans, len,
              isServer
                  ? "(A client) => IP address: %s; port number: %d"
                  : "(Server) => IP address: %s; port number: %d",
              (char *)inet_ntop(AF_INET, &peeraddr.sin_addr, buffer, sizeof(buffer)),
              ntohs(peeraddr.sin_port));
-  }
+  // }
 
   return ans;
 }
