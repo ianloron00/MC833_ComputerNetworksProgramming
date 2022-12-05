@@ -12,6 +12,7 @@
 
 // change it to your path
 #define OUTPUT_CONN_PATH "~/connection_info.txt"
+typedef unsigned short int usi;
 
 #endif
 
