@@ -36,7 +36,7 @@ void doit(FILE *fp, int sockfd)
       
       if ((cliport = atoi(recvline)) > 0)
       {
-        printf("initializing UDP connection at port %d\n", cliport);
+        printf("\ninitializing UDP connection at port %d\n", cliport);
         isMaster ? udp_master(cliport) : udp_slave(cliport);
       }
     }

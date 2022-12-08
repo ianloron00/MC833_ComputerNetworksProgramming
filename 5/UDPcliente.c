@@ -1,10 +1,9 @@
 #include "udp.h"
 
-// Driver code
 int main(int argc, char **argv)
 {
   int sockfd;
-  struct sockaddr_in servaddr;
+  SAI servaddr;
   const char* port = argv[2];
 
   // Creating socket file descriptor
@@ -14,14 +13,12 @@ int main(int argc, char **argv)
 
   // Filling server information
   servaddr.sin_family = AF_INET;
-  servaddr.sin_addr.s_addr = INADDR_LOOPBACK;
+  servaddr.sin_addr.s_addr = INADDR_ANY;
   servaddr.sin_port = htons((usi) atoi(port));
 
-  // send first message, of acknoledgement
   char ack[5] = "ACK";
   Sendto(sockfd, ack, sizeof(ack), 0, 
         (const SA *)&servaddr, sizeof(servaddr));
-
   chat(sockfd, servaddr);
 
   close(sockfd);

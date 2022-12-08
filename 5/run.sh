@@ -6,8 +6,8 @@
 # Then, run the code:
 # > ./run.sh cliente servidor
 
- cliente="TCPcliente"
-servidor="TCPservidor"
+ cliente="UDPcliente"
+servidor="UDPservidor"
 
 compile() {
     for arg in "$@";

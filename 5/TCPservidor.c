@@ -20,7 +20,7 @@ void print_clients_list()
   // port
   // socket
   // state:  0 - disconnected, 1 - connected, 2 - pair messaging
-  printf("Clients List:\nport\t | socket | state\n");
+  printf("Clients List:\nport\t | socket  | state\n");
   for (int i = 0; i < MAX_NUM_CONN; i++)
   {
     printf("%d\t |\t %d | %d\n", CLIENTS[i][0], CLIENTS[i][1], CLIENTS[i][2]);
@@ -78,26 +78,34 @@ ssize_t listen_client(int sockfd)
   int peerport;
   memset(&recvline, 0, sizeof(recvline));
 
-  printf("listening client\n");
-  // receive desired peer to connect and send respective port to both.
   if ((n = Read(sockfd, recvline, MAXLINE)) > 0)
   {
-    //  testing
-    recvline[n] = '\0';
-    printf("echoing: %s\n", recvline);
-    Writen(sockfd, recvline, sizeof(recvline));
-
+    // start peer UDP communication
     if ((peerport = atoi(recvline)) > 0)
     {
       int cliport = _get_port(sockfd);
       int peerfd = _get_socket(peerport);
 
-      printf("starting UDP communication between clients %d and %d\n", cliport, peerport);
-      char portbuf[6];
-      // NEEDS TO CREATE RANDOM PORT
-      sprintf(portbuf, "%d", (cliport + 1111));
-      Writen(sockfd, portbuf, sizeof(portbuf));
-      Writen(peerfd, portbuf, sizeof(portbuf));
+      if (peerfd != -1) {
+        printf("starting UDP communication between clients %d and %d\n", cliport, peerport);
+        char portbuf[6];
+        // NEEDS TO CREATE RANDOM PORT
+        sprintf(portbuf, "%d", (cliport/10 + 1));
+        Writen(sockfd, portbuf, sizeof(portbuf));
+        Writen(peerfd, portbuf, sizeof(portbuf));
+
+        update_clients_list(sockfd, 2);
+        update_clients_list(peerfd, 2);
+        print_clients_list();
+      }
+      else
+        printf("port %d is not in list\n", peerport);
+    }
+    else {
+      //  testing
+      recvline[n] = '\0';
+      printf("echoing: %s\n", recvline);
+      Writen(sockfd, recvline, sizeof(recvline));
     }
   }
 
@@ -112,7 +120,6 @@ int main(int argc, char *argv[])
   int listenfd, addrlen, new_socket;
   int max_sd, i, valread, sd;
   SAI address;
-  char recvline[MAXLINE];
   fd_set readfds;
 
   if (argc != 2)
@@ -201,14 +208,7 @@ int main(int argc, char *argv[])
           Close(sd);
           CLIENTS[i][1] = 0;
           CLIENTS[i][2] = 0;
-        }
-
-        // start UDP peer communication
-        else
-        {
-          recvline[valread] = '\0';
-          printf("received: %s\n", recvline);
-          // TODO
+          print_clients_list();
         }
       }
     }

@@ -1,10 +1,9 @@
 #include "udp.h"
 
-// Driver code
 int main(int argc, char **argv)
 {
   int sockfd;
-  struct sockaddr_in servaddr, cliaddr;
+  SAI servaddr, cliaddr;
   const char* port = argv[1];
 
   // Creating socket file descriptor
@@ -14,8 +13,8 @@ int main(int argc, char **argv)
   memset(&cliaddr, 0, sizeof(cliaddr));
 
   // Filling server information
-  servaddr.sin_family = AF_INET; // IPv4
-  servaddr.sin_addr.s_addr = INADDR_LOOPBACK;
+  servaddr.sin_family = AF_INET;
+  servaddr.sin_addr.s_addr = INADDR_ANY;
   servaddr.sin_port = htons((usi) atoi(port));
 
   // Bind the socket with the server address
