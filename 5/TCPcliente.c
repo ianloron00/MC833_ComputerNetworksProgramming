@@ -1,24 +1,30 @@
 #include "./udp.h"
 
-void __str_cli(FILE *fp, int sockfd)
+void doit(FILE *fp, int sockfd)
 {
   int maxfdp1, stdineof, n;
   fd_set rset;
-  char buf[MAXLINE];
+  char recvline[MAXLINE], sendline[MAXLINE];
   short isMaster = 0;
+  int cliport;
 
   stdineof = 0;
   FD_ZERO(&rset);
   for (;;)
   {
+    memset(&recvline, 0, strlen(recvline));
+    memset(&sendline, 0, strlen(sendline));
+
     FD_SET(sockfd, &rset);
+    FD_SET(fileno(fp), &rset);
     maxfdp1 = max(fileno(fp), sockfd) + 1;
     Select(maxfdp1, &rset, NULL, NULL, NULL);
 
-    // reads from server and start UDP communication
+    // reads from server, prints message and start UDP communication
     if (FD_ISSET(sockfd, &rset))
     {
-      if ((n = Read(sockfd, buf, MAXLINE)) == 0)
+      // if server is done.
+      if ((n = Read(sockfd, recvline, MAXLINE)) == 0)
       {
         if (stdineof == 1)
           return;
@@ -26,36 +32,33 @@ void __str_cli(FILE *fp, int sockfd)
         else
           err_quit("str_cli: server terminated prematurely");
       }
-      Write(fileno(stdout), buf, n);
+      printf("received: %s", recvline);
       
-      usi master_port = (usi) atoi(buf);
-      printf("starting udp communication at port %d...\n", master_port);
-      
-      if (isMaster)
-        udp_master(master_port);
-      else
-        udp_slave(master_port);
+      if ((cliport = atoi(recvline)) > 0)
+      {
+        printf("initializing UDP connection at port %d\n", cliport);
+        isMaster ? udp_master(cliport) : udp_slave(cliport);
+      }
     }
 
     // reads input and send to server
     if (FD_ISSET(fileno(fp), &rset))
     {
-      if ((n = Read(fileno(fp), buf, MAXLINE)) == 0)
+      if ((n = Read(fileno(fp), sendline, MAXLINE)) == 0)
       {
         Shutdown(sockfd, SHUT_WR);
         FD_CLR(fileno(fp), &rset);
         continue;
       }
-      if (atoi(buf) != 0)
+      
+      printf("sending: %s", sendline);
+      Writen(sockfd, sendline, n);
+      if ((cliport = atoi(sendline)) > 0)
+      {
         isMaster = 1;
-      Writen(sockfd, buf, n);
+      }
     }
   }
-}
-
-void doit(int sockfd, SA *servaddr)
-{
-  __str_cli(stdin, sockfd);
 }
 
 int main(int argc, char **argv)
@@ -86,7 +89,7 @@ int main(int argc, char **argv)
 
   print_client_info(sockfd);
   print_peer_info(sockfd, 0);
-  doit(sockfd, (SA *)&servaddr);
+  doit(stdin, sockfd);
 
   exit(0);
 }
