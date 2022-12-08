@@ -1,0 +1,20 @@
+Time: Thu Dec  8 19:19:06 2022
+peer: hi there
+
+peer: how are you?
+
+hi man
+
+actually I am busy right now
+
+gonna message you latter ok?
+
+peer: fine bor
+
+peer: good bye
+
+bye
+
+finalizar_chat
+
+Time: Thu Dec  8 19:20:53 2022

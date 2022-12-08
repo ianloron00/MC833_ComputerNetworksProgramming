@@ -1,7 +1,6 @@
 #include "./udp.h"
 
 #define TRUE 1
-#define FALSE 0
 
 // possible connectable clients, and its state
 #define MAX_NUM_CONN 10
@@ -112,7 +111,7 @@ ssize_t udp_management(int sockfd)
     else
     {
       recvline[n] = '\0';
-      printf("echoing: %s\n", recvline);
+      printf("echoing to socket %d: %s\n", sockfd, recvline);
       Writen(sockfd, recvline, sizeof(recvline));
     }
   }

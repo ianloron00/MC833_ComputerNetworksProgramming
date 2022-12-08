@@ -22,7 +22,8 @@ int main(int argc, char **argv)
            sizeof(servaddr)) < 0)
     err_quit("bind failed");
 
-  chat(sockfd, cliaddr);
+  init_chat_file();
+  chat(sockfd, cliaddr, 1);
 
   return 0;
 }

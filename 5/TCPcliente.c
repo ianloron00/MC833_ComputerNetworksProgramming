@@ -34,10 +34,12 @@ void doit(FILE *fp, int sockfd)
       }
       printf("received: %s", recvline);
       
+      // initialize UDP communication
       if ((cliport = atoi(recvline)) > 0)
       {
         printf("\ninitializing UDP connection at port %d\n", cliport);
         isMaster ? udp_master(cliport) : udp_slave(cliport);
+        
         // update client status at TCP connection.
         char ack[5] = "ACK";
         Writen(sockfd, ack, 5);

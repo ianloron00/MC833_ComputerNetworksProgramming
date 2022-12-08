@@ -12,9 +12,30 @@
 
 // change it to your path
 #define OUTPUT_CONN_PATH "~/connection_info.txt"
+#define CHAT "./chat.txt"
+
 typedef unsigned short int usi;
 
 #endif
+
+void save_info(FILE *fd, char *info);
+void save_chat_info(char *info);
+char *get_time_connection();
+
+void init_chat_file() {
+  FILE *file;
+  file = fopen(CHAT, "w");
+  save_chat_info(get_time_connection());
+  fclose(file);
+  printf("file %s created\n", CHAT);
+}
+
+void save_chat_info(char *info)
+{
+  FILE *file;
+  file = fopen(CHAT, "a");
+  save_info(file, info);
+}
 
 void  str_echo(int sockfd)
 {

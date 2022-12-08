@@ -1,10 +1,10 @@
 #include "auxiliary.h"
 
-void chat(int sockfd, SAI cliaddr);
+void chat(int sockfd, SAI cliaddr, short isMaster);
 void udp_master(usi master_port);
 void udp_slave(usi master_port);
 
-void chat(int sockfd, SAI peeraddr)
+void chat(int sockfd, SAI peeraddr, short isMaster)
 {
   int maxfdp, n;
   fd_set rset;
@@ -33,13 +33,23 @@ void chat(int sockfd, SAI peeraddr)
 
       if (strcmp(recvline, "finalizar_chat\n") == 0)
       {
+          if (isMaster)
+            save_chat_info(get_time_connection());
+            
         printf("finishing UDP communication\n");
         break;
         exit(0);
       }
 
       if (strcmp(recvline, "ACK") != 0)
-        printf("peer: %s", recvline);
+      {
+        char buf[MAXLINE] = "peer: ";
+        strcat(buf, recvline);
+        printf("%s", buf);
+
+        if (isMaster)
+          save_chat_info(buf);
+      }
     }
 
     if (FD_ISSET(fileno(fp), &rset))
@@ -50,12 +60,19 @@ void chat(int sockfd, SAI peeraddr)
                strlen(sendline), 0,
                (const SA *)&peeraddr, sizeof(peeraddr));
 
+        if (isMaster)
+          save_chat_info(sendline);
+        
         if (strcmp(sendline, "finalizar_chat\n") == 0)
         {
+          if (isMaster)
+            save_chat_info(get_time_connection());
+
           printf("finishing UDP communication\n");
           break;
           exit(0);
         }
+
       }
     }
   }
@@ -82,7 +99,8 @@ void udp_master(usi port)
            sizeof(servaddr)) < 0)
     err_quit("bind failed");
 
-  chat(sockfd, cliaddr);
+  init_chat_file();
+  chat(sockfd, cliaddr, 1);
 }
 
 void udp_slave(usi port)
@@ -103,7 +121,7 @@ void udp_slave(usi port)
   char ack[5] = "ACK";
   Sendto(sockfd, ack, sizeof(ack), 0,
          (const SA *)&servaddr, sizeof(servaddr));
-  chat(sockfd, servaddr);
+  chat(sockfd, servaddr, 0);
 
   close(sockfd);
 }

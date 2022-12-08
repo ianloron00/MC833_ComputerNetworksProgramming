@@ -19,7 +19,7 @@ int main(int argc, char **argv)
   char ack[5] = "ACK";
   Sendto(sockfd, ack, sizeof(ack), 0, 
         (const SA *)&servaddr, sizeof(servaddr));
-  chat(sockfd, servaddr);
+  chat(sockfd, servaddr, 0);
 
   close(sockfd);
   return 0;
