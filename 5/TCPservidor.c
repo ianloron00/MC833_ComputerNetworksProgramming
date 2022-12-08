@@ -1,128 +1,218 @@
-// https://notes.shichao.io/unp/ch5/#tcp-echo-client-str_cli-function
-// https://notes.shichao.io/unp/ch6/
 #include "./udp.h"
+
+#define TRUE 1
+#define FALSE 0
+
 // possible connectable clients, and its state
 #define MAX_NUM_CONN 10
-// 0 - disconnected, 1 - connected, 2 - pair messaging
-int CLIENTS[MAX_NUM_CONN][2];
-#define MASTER_PORT 8085
+int CLIENTS[MAX_NUM_CONN][3];
 
-void initialize_list_clients() {
-  for (int i = 0; i < MAX_NUM_CONN; i++) {
-    memset(CLIENTS[i], 0, 2*sizeof(int));
+void init_clients_list()
+{
+  for (int i = 0; i < MAX_NUM_CONN; i++)
+  {
+    memset(CLIENTS[i], 0, 3 * sizeof(int));
   }
 }
 
-void print_list_clients() {
-  printf("Clients List:\nport number | state\n");
-  for (int i = 0; i < MAX_NUM_CONN; i++) {
-    printf("%d\t  |\t %d\n", CLIENTS[i][0], CLIENTS[i][1]);
+void print_clients_list()
+{
+  // port
+  // socket
+  // state:  0 - disconnected, 1 - connected, 2 - pair messaging
+  printf("Clients List:\nport\t | socket | state\n");
+  for (int i = 0; i < MAX_NUM_CONN; i++)
+  {
+    printf("%d\t |\t %d | %d\n", CLIENTS[i][0], CLIENTS[i][1], CLIENTS[i][2]);
   }
   printf("\n");
 }
 
-void update_list_clients(int sockfd, int state) {
+void update_clients_list(int sockfd, int state)
+{
   int port = get_port_number(sockfd);
 
   // ADD SOCKET TO IT
-  for (int i = 0; i < MAX_NUM_CONN; i++) {
-    if (port == CLIENTS[i][0] || CLIENTS[i][0] == 0) {
+  for (int i = 0; i < MAX_NUM_CONN; i++)
+  {
+    if (port == CLIENTS[i][0] || CLIENTS[i][0] == 0)
+    {
       CLIENTS[i][0] = port;
-      CLIENTS[i][1] = state;
+      CLIENTS[i][1] = sockfd;
+      CLIENTS[i][2] = state;
       return;
     }
   }
 }
 
-void add_client(int connfd) {
-  update_list_clients(connfd, 1);
-  print_list_clients();
+void add_client(int connfd)
+{
+  update_clients_list(connfd, 1);
+  print_clients_list();
 }
 
-void listen_from_clients(int sockfd) {
+int _get_socket(int port)
+{
+  for (int i = 0; i < MAX_NUM_CONN; i++)
+  {
+    if (CLIENTS[i][0] == port)
+      return CLIENTS[i][1];
+  }
+  return -1;
+}
+
+int _get_port(int sockfd)
+{
+  for (int i = 0; i < MAX_NUM_CONN; i++)
+  {
+    if (CLIENTS[i][1] == sockfd)
+      return CLIENTS[i][0];
+  }
+  return -1;
+}
+
+ssize_t listen_client(int sockfd)
+{
   ssize_t n;
   char recvline[MAXLINE];
   int peerport;
-  
-again:
-  // receive desired peer to connect and send respective port to both. 
-  while ((n = read(sockfd, recvline, MAXLINE)) > 0) {
-    printf("client: %s\n", recvline);
-    if ((peerport = atoi(recvline)) > 0) {
-      int cliport = get_port_number(sockfd);
+  memset(&recvline, 0, sizeof(recvline));
+
+  printf("listening client\n");
+  // receive desired peer to connect and send respective port to both.
+  if ((n = Read(sockfd, recvline, MAXLINE)) > 0)
+  {
+    //  testing
+    recvline[n] = '\0';
+    printf("echoing: %s\n", recvline);
+    Writen(sockfd, recvline, sizeof(recvline));
+
+    if ((peerport = atoi(recvline)) > 0)
+    {
+      int cliport = _get_port(sockfd);
+      int peerfd = _get_socket(peerport);
+
       printf("starting UDP communication between clients %d and %d\n", cliport, peerport);
-      char port[6];
-      // convert integer to string
-      sprintf(port, "%d", MASTER_PORT);
-      Writen(sockfd, port, sizeof(port));
-      // NEEDS ARRAY TO ACCESS PEER PORT
-      // Writen(peerfd, port, sizeof(port));
+      char portbuf[6];
+      // NEEDS TO CREATE RANDOM PORT
+      sprintf(portbuf, "%d", (cliport + 1111));
+      Writen(sockfd, portbuf, sizeof(portbuf));
+      Writen(peerfd, portbuf, sizeof(portbuf));
     }
   }
 
-  if (n < 0 && errno == EINTR)
-    goto again;
-  else if (n < 0)
+  if (n < 0 && errno != EINTR)
     err_quit("str_echo: read error");
+
+  return n;
 }
 
-/*
- * Generic Function to be executed after fork
- */
-void doit(int connfd)
+int main(int argc, char *argv[])
 {
-  print_peer_info(connfd, 1);
-  add_client(connfd);
-  listen_from_clients(connfd);
-  printf("after str_echo:\n");
-  print_list_clients();
-}
-
-int main(int argc, char **argv)
-{
-  int listenfd, connfd;
-  struct sockaddr_in servaddr;
-  pid_t childpid;
-  char error[MAXLINE + 1];
+  int listenfd, addrlen, new_socket;
+  int max_sd, i, valread, sd;
+  SAI address;
+  char recvline[MAXLINE];
+  fd_set readfds;
 
   if (argc != 2)
   {
-    strcpy(error, "Definir: ");
+    char error[MAXLINE + 1];
+    strcpy(error, "uso: ");
     strcat(error, argv[0]);
-    strcat(error, " <Port>");
+    strcat(error, "<Port>");
     perror(error);
     exit(1);
   }
+  usi port = (usi)atoi(argv[1]);
 
-  bzero(&servaddr, sizeof(servaddr));
-  servaddr.sin_family = AF_INET;
-  servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-  servaddr.sin_port = htons((unsigned short int)atoi(argv[1]));
+  init_clients_list();
+
+  // type of socket created
+  memset(&address, 0, sizeof(address));
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  address.sin_port = htons(port);
+
+  // create a master socket
   listenfd = Socket(AF_INET, SOCK_STREAM, 0);
 
-  if (bind(listenfd, (SA *)&servaddr, sizeof(servaddr)) == -1)
+  // bind the socket to localhost port 8888
+  if (bind(listenfd, (SA *)&address, sizeof(address)) < 0)
     err_quit("bind");
+    
+  printf("Listener on port %d \n", ntohs(address.sin_port));
 
   Listen(listenfd, LISTENQ);
-  print_server_info(listenfd);
-  initialize_list_clients();
 
-  for (;;)
+  // accept the incoming connection
+  addrlen = sizeof(address);
+  puts("Waiting for connections ...");
+
+  while (TRUE)
   {
-    connfd = Accept(listenfd, (SA *)NULL, NULL);
+    FD_ZERO(&readfds);
+    FD_SET(listenfd, &readfds);
+    max_sd = listenfd;
 
-    // probably it is just not necessary!
-    if ((childpid = Fork()) == 0)
+    // add child sockets to set
+    for (i = 0; i < MAX_NUM_CONN; i++)
     {
-      Close(listenfd);
-      doit(connfd);
-      exit(0);
+      sd = CLIENTS[i][1];
+      if (sd > 0)
+        FD_SET(sd, &readfds);
+
+      max_sd = max(max_sd, sd);
     }
 
-    printf("before closing connection:\n");
-    print_list_clients();
-    Close(connfd);
+    Select(max_sd + 1, &readfds, NULL, NULL, NULL);
+
+    // receives an incoming connection
+    if (FD_ISSET(listenfd, &readfds))
+    {
+      new_socket = Accept(listenfd, (SA *)&address,(socklen_t *)&addrlen);
+      printf("New connection, socket fd is %d, ip is : %s, port : %d\n",
+             new_socket, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+
+      // add new socket to array of sockets
+      add_client(new_socket);
+    }
+
+    // else its some IO operation on some other socket
+    for (i = 0; i < MAX_NUM_CONN; i++)
+    {
+      if((sd = CLIENTS[i][1]) == 0) 
+        break;
+
+      // listen to client message
+      if (FD_ISSET(sd, &readfds))
+      {
+        valread = listen_client(sd);
+        
+        // Check if it was for closing
+        if (valread == 0)
+        {
+          Getpeername(sd, (struct sockaddr *)&address,
+                      (socklen_t *)&addrlen);
+          printf("Host disconnected , ip %s , port %d \n",
+                 inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+
+          // Close the socket and mark as 0 in list for reuse
+          Close(sd);
+          CLIENTS[i][1] = 0;
+          CLIENTS[i][2] = 0;
+        }
+
+        // start UDP peer communication
+        else
+        {
+          recvline[valread] = '\0';
+          printf("received: %s\n", recvline);
+          // TODO
+        }
+      }
+    }
   }
 
-  return (0);
+  return 0;
 }
