@@ -4,9 +4,13 @@ out/*
 docs/*
 docs*
 .vscode
-serv_temp.c
-temp.c
+serv_temp*
+temp*
 183266*
 __*
-_udp_cliente
-_udp_servidor
+UDPcliente
+UDPservidor
+TCPcliente
+TCPservidor
+/trials/
+/trials/*

@@ -1,8 +1,8 @@
 #include "auxiliary.h"
 
 void chat(int sockfd, SAI cliaddr);
-void init_udp_master(int sockfd, SAI cliaddr, usi port);
-void init_udp_slave(int sockfd, SAI cliaddr, usi port);
+void udp_master(usi master_port);
+void udp_slave(usi master_port);
 
 void chat(int sockfd, SAI peeraddr)
 {
@@ -13,6 +13,7 @@ void chat(int sockfd, SAI peeraddr)
   socklen_t clilen = sizeof(peeraddr);
 
   FD_ZERO(&rset);
+  printf("\nstarting UDP connection\n\n");
   for (;;)
   {
     FD_SET(fileno(fp), &rset);
@@ -51,11 +52,15 @@ void chat(int sockfd, SAI peeraddr)
       }
     }
   }
+
+  printf("\nfinishing UDP connection...\n\n");
+
 }
 
-void init_udp_master(int sockfd, SAI cliaddr, usi port)
+void udp_master(usi master_port)
 {
-  SAI servaddr;
+  int sockfd;
+  struct sockaddr_in servaddr, cliaddr;
 
   // Creating socket file descriptor
   sockfd = Socket(AF_INET, SOCK_DGRAM, 0);
@@ -65,20 +70,22 @@ void init_udp_master(int sockfd, SAI cliaddr, usi port)
 
   // Filling server information
   servaddr.sin_family = AF_INET; // IPv4
-  servaddr.sin_addr.s_addr = INADDR_ANY;
-  servaddr.sin_port = htons(port);
+  servaddr.sin_addr.s_addr = INADDR_LOOPBACK;
+  servaddr.sin_port = htons(master_port);
 
   // Bind the socket with the server address
-  if (bind(sockfd, (const SA *)&servaddr,
+  if (bind(sockfd, (const struct sockaddr *)&servaddr,
            sizeof(servaddr)) < 0)
     err_quit("bind failed");
 
   chat(sockfd, cliaddr);
-
 }
 
-void init_udp_slave(int sockfd, SAI servaddr, usi port)
+void udp_slave(usi master_port)
 {
+  int sockfd;
+  struct sockaddr_in servaddr;
+
   // Creating socket file descriptor
   sockfd = Socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -86,12 +93,14 @@ void init_udp_slave(int sockfd, SAI servaddr, usi port)
 
   // Filling server information
   servaddr.sin_family = AF_INET;
-  servaddr.sin_addr.s_addr = INADDR_ANY;
-  servaddr.sin_port = htons(port);
+  servaddr.sin_addr.s_addr = INADDR_LOOPBACK;
+  servaddr.sin_port = htons(master_port);
 
+  // send first message, of acknoledgement
   char ack[5] = "ACK";
   Sendto(sockfd, ack, sizeof(ack), 0, 
         (const SA *)&servaddr, sizeof(servaddr));
+
   chat(sockfd, servaddr);
 
   close(sockfd);
