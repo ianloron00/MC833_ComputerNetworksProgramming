@@ -71,7 +71,7 @@ int _get_port(int sockfd)
   return -1;
 }
 
-ssize_t listen_client(int sockfd)
+ssize_t udp_management(int sockfd)
 {
   ssize_t n;
   char recvline[MAXLINE];
@@ -80,17 +80,18 @@ ssize_t listen_client(int sockfd)
 
   if ((n = Read(sockfd, recvline, MAXLINE)) > 0)
   {
-    // start peer UDP communication
+    // start peer UDP communication if received port
     if ((peerport = atoi(recvline)) > 0)
     {
       int cliport = _get_port(sockfd);
       int peerfd = _get_socket(peerport);
 
-      if (peerfd != -1) {
+      if (peerfd != -1)
+      {
         printf("starting UDP communication between clients %d and %d\n", cliport, peerport);
         char portbuf[6];
         // NEEDS TO CREATE RANDOM PORT
-        sprintf(portbuf, "%d", (cliport/10 + 1));
+        sprintf(portbuf, "%d", (cliport / 10 + 1));
         Writen(sockfd, portbuf, sizeof(portbuf));
         Writen(peerfd, portbuf, sizeof(portbuf));
 
@@ -101,8 +102,15 @@ ssize_t listen_client(int sockfd)
       else
         printf("port %d is not in list\n", peerport);
     }
-    else {
-      //  testing
+    // clients ended UDP connection
+    else if (strcmp(recvline, "ACK") == 0)
+    {
+      printf("client of socket %d is back!\n", sockfd);
+      update_clients_list(sockfd, 1);
+    }
+    // echo back clients messages
+    else
+    {
       recvline[n] = '\0';
       printf("echoing: %s\n", recvline);
       Writen(sockfd, recvline, sizeof(recvline));
@@ -147,7 +155,7 @@ int main(int argc, char *argv[])
   // bind the socket to localhost port 8888
   if (bind(listenfd, (SA *)&address, sizeof(address)) < 0)
     err_quit("bind");
-    
+
   printf("Listener on port %d \n", ntohs(address.sin_port));
 
   Listen(listenfd, LISTENQ);
@@ -177,7 +185,7 @@ int main(int argc, char *argv[])
     // receives an incoming connection
     if (FD_ISSET(listenfd, &readfds))
     {
-      new_socket = Accept(listenfd, (SA *)&address,(socklen_t *)&addrlen);
+      new_socket = Accept(listenfd, (SA *)&address, (socklen_t *)&addrlen);
       printf("New connection, socket fd is %d, ip is : %s, port : %d\n",
              new_socket, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
 
@@ -188,14 +196,14 @@ int main(int argc, char *argv[])
     // else its some IO operation on some other socket
     for (i = 0; i < MAX_NUM_CONN; i++)
     {
-      if((sd = CLIENTS[i][1]) == 0) 
+      if ((sd = CLIENTS[i][1]) == 0)
         break;
 
       // listen to client message
       if (FD_ISSET(sd, &readfds))
       {
-        valread = listen_client(sd);
-        
+        valread = udp_management(sd);
+
         // Check if it was for closing
         if (valread == 0)
         {

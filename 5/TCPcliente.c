@@ -38,6 +38,10 @@ void doit(FILE *fp, int sockfd)
       {
         printf("\ninitializing UDP connection at port %d\n", cliport);
         isMaster ? udp_master(cliport) : udp_slave(cliport);
+        // update client status at TCP connection.
+        char ack[5] = "ACK";
+        Writen(sockfd, ack, 5);
+        printf("back to TCP connection!\n");
       }
     }
 
